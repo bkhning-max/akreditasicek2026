@@ -31,7 +31,7 @@
 <div class="flex gap-2 mt-3 flex-wrap">
 <span id="saveStatus" class="text-xs bg-gray-100 px-3 py-1 rounded-full">💾 54 Program Studi</span>
 <span id="cloudStatus" class="text-xs bg-blue-100 px-3 py-1 rounded-full hidden">☁️ Cloud Live</span>
-<span class="text-xs bg-amber-100 px-3 py-1 rounded-full"> Proporsi Mutu • Tren & Operasional • Alert System</span>
+<span class="text-xs bg-amber-100 px-3 py-1 rounded-full"> Proporsi Mutu • Tren & Operasional • Risk Alert System</span>
 </div>
 </div>
 <div class="flex gap-2">
@@ -121,7 +121,7 @@
 <div class="bg-white p-5 rounded-xl shadow">
 <div class="flex flex-wrap justify-between items-center mb-3 gap-3">
 <div>
-<h3 class="font-bold text-sm">📋 Alert System </h3>
+<h3 class="font-bold text-sm">📋 Risk Alert System </h3>
 <p class="text-xs text-gray-500">Pencarian, filter, pengurutan tanggal, penanda warna kondisi (Conditional Formatting)</p>
 </div>
 <div class="flex gap-2">
@@ -175,7 +175,7 @@
 </div>
 </div>
 
-<div class="text-center text-xs text-gray-400 mt-6">Dashboard 3 Tier • Donut Proporsi • Stacked Jenjang • Lembaga & Proyeksi • Heatmap • 100% Fakultas • Alert Table 10+Loadmore • PDF Export • Cloud Sync</div>
+<div class="text-center text-xs text-gray-400 mt-6">Dibuat oleh Kepala Pusat Akreditasi dan Sertifikasi Lembaga Penjaminan Mutu UIN Sayyid Ali Rahmatullah Tulungagung</div>
 </div>
 
 <script>
@@ -327,7 +327,7 @@ document.getElementById('btnDownloadPDF').addEventListener('click', ()=>{
 document.getElementById('btnDownloadDataPDF').addEventListener('click', ()=>{
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('l','mm','a4');
-  doc.text('Data Akreditasi UIN SATU - Alert System', 10, 10);
+  doc.text('Data Akreditasi UIN SATU - Risk Alert System', 10, 10);
   const rows = currentData.map((r,i)=> [i+1, r['Program Studi'], r.Fakultas, r.Strata, r['Lembaga Akreditasi'], r.Peringkat, r['Tanggal Kedaluwarsa'], r['Status Kedaluwarsa']]);
   doc.autoTable({head:[['No','Prodi','Fakultas','Strata','Lembaga','Peringkat','Kedaluwarsa','Status']], body: rows, startY: 15, styles:{fontSize:7}});
   doc.save('data_akreditasi_lengkap.pdf');
