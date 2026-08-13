@@ -1,786 +1,881 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SATU AURA | Accreditation Update & Risk Alert - UIN SATU Tulungagung</title>
+    <title>Sistem Informasi & Alert Akreditasi Program Studi (Ekoteologi Islam)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
+    <!-- Chart.js & Heatmap plugin support -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1/dist/chartjs-chart-matrix.min.js"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- html2pdf.js for generating PDF client-side -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8FAF9;
+            color: #1F2937;
+        }
+        .bg-islamic-pattern {
+            background-color: #064E3B;
+            background-image: radial-gradient(#10B981 0.75px, transparent 0.75px), radial-gradient(#10B981 0.75px, #064E3B 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0,15px 15px;
+        }
         .parallax {
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            position: relative;
         }
-        .parallax-1 {
-            background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80');
-        }
-        .parallax-2 {
-            background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80');
-        }
-        .parallax-3 {
-            background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1920&q=80');
-        }
-        .parallax-4 {
-            background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80');
-        }
-        .overlay-dark {
-            background: linear-gradient(135deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.88));
-        }
-        .slide-fade {
-            transition: opacity 1s ease-in-out;
-        }
-        .conditional-kritis {
-            background-color: #FEF2F2 !important;
-            border-left: 4px solid #EF4444;
-        }
-        .conditional-waspada {
-            background-color: #FFFBEB !important;
-            border-left: 4px solid #F59E0B;
+        /* Status Colors */
+        .status-kritis { background-color: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
+        .badge-kritis { background-color: #DC2626; color: white; }
+        
+        .status-waspada { background-color: #FFFBEB; color: #92400E; border-color: #FCD34D; }
+        .badge-waspada { background-color: #D97706; color: white; }
+        
+        .status-aman { background-color: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
+        .badge-aman { background-color: #059669; color: white; }
+        
+        .status-baru { background-color: #F3F4F6; color: #374151; border-color: #D1D5DB; }
+        .badge-baru { background-color: #6B7280; color: white; }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+<body class="antialiased">
 
-    <!-- HEADER SECTION -->
-    <header class="sticky top-0 z-50 bg-white border-b border-emerald-100 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 flex-shrink-0 bg-emerald-800 p-1 rounded-lg shadow">
-                    <!-- Logo UIN -->
-                    <svg viewBox="0 0 100 100" class="w-full h-full text-amber-400 fill-current">
-                        <path d="M50 5 L15 25 L15 75 L50 95 L85 75 L85 25 Z" fill="none" stroke="currentColor" stroke-width="6"/>
-                        <circle cx="50" cy="50" r="20" fill="currentColor"/>
-                    </svg>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-emerald-900 text-white shadow-lg border-b border-emerald-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-full bg-emerald-800 border-2 border-emerald-400 flex items-center justify-center text-emerald-300 shadow">
+                    <i class="fa-solid me-0 fa-leaf text-2xl text-emerald-300"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold text-emerald-950 tracking-tight leading-none">SATU AURA <span class="text-xs font-normal text-emerald-600 border-l border-slate-300 pl-2 ml-1">Accreditation Update & Risk Alert</span></h1>
-                    <p class="text-xs text-slate-600 font-medium mt-1">Pusat Akreditasi dan Sertifikasi Lembaga Penjaminan Mutu UIN Sayyid Ali Rahmatullah Tulungagung</p>
+                    <h1 class="font-extrabold text-xl tracking-tight text-emerald-100">SIM-AKREDITASI EKOTEOLOGI</h1>
+                    <p class="text-xs text-emerald-300 font-medium">Lembaga Penjaminan Mutu Kampus Islam Berkelanjutan</p>
                 </div>
             </div>
-            <nav class="flex items-center gap-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                <a href="#alert-section" class="hover:text-emerald-700 transition">Risk Alert</a>
-                <a href="#proporsi-section" class="hover:text-emerald-700 transition">Komposisi</a>
-                <a href="#tren-section" class="hover:text-emerald-700 transition">Tren & Operasional</a>
-                <a href="#bottom-tier" class="hover:text-emerald-700 transition">Heatmap & Tabel</a>
+            <nav class="hidden md:flex space-x-6 text-sm font-semibold text-emerald-200">
+                <a href="#dashboard" class="hover:text-white transition">Dashboard & Alert</a>
+                <a href="#heatmap" class="hover:text-white transition">Heatmap Status</a>
+                <a href="#dataset" class="hover:text-white transition">Dataset Akreditasi</a>
+                <a href="#parallax-sec" class="hover:text-white transition">Lembaga Akreditasi</a>
+                <a href="#admin" class="hover:text-white transition">Ruang Admin</a>
             </nav>
+            <div class="flex items-center space-x-3">
+                <span class="text-xs bg-emerald-800 text-emerald-200 px-3 py-1.5 rounded-full border border-emerald-600">
+                    <i class="fa-solid fa-user-shield mr-1"></i> Admin Mutu
+                </span>
+            </div>
         </div>
     </header>
 
-    <!-- SLIDESHOW SECTION -->
-    <section class="relative h-[480px] bg-slate-900 overflow-hidden shadow-inner">
-        <!-- Slide 1 -->
-        <div class="slide slide-fade absolute inset-0 opacity-100 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/90 to-slate-900/70"></div>
-            <div class="relative max-w-7xl mx-auto px-6 text-white w-full">
-                <span class="bg-emerald-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">AI Aerial View - Green Campus</span>
-                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-2">Transformasi Mutu Berkelanjutan</h2>
-                <p class="text-emerald-100 text-lg max-w-2xl mb-6">Pemantauan otomatis 54 Program Studi secara terintegrasi dan real-time.</p>
-                <div class="flex gap-6 border-t border-emerald-500/30 pt-4">
-                    <div><span class="text-2xl font-bold text-amber-400">54</span> <span class="text-xs text-slate-300">Total Prodi</span></div>
-                    <div><span class="text-2xl font-bold text-emerald-400">32</span> <span class="text-xs text-slate-300">Unggul</span></div>
+    <!-- Banner Hero & Kampus Ekoteologi Islam -->
+    <section class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 text-white py-12 px-4 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
+            <div class="md:col-span-7 space-y-4">
+                <div class="inline-flex items-center space-x-2 bg-emerald-800/80 text-emerald-300 text-xs px-3 py-1 rounded-full border border-emerald-500">
+                    <i class="fa-solid fa-mosque"></i>
+                    <span>Integrasi Nilai Islam & Kelestarian Ekologi</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-emerald-50">
+                    Sistem Pengawasan & Penjaminan Mutu Akreditasi Program Studi
+                </h2>
+                <p class="text-emerald-200 text-sm leading-relaxed">
+                    Mewujudkan tata kelola akademis unggul, lestari, dan amanah berlandaskan nilai-nilai ekoteologi Islam. Memantau siklus akreditasi BAN-PT, LAMDIK, dan LAMEMBA secara real-time.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-2">
+                    <a href="#dataset" class="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-bold text-xs px-5 py-3 rounded-lg shadow transition flex items-center">
+                        <i class="fa-solid fa-table mr-2"></i> Lihat Dataset Akreditasi
+                    </a>
+                    <a href="#admin" class="bg-emerald-800/90 hover:bg-emerald-700 text-white font-medium text-xs px-5 py-3 rounded-lg border border-emerald-600 transition flex items-center">
+                        <i class="fa-solid fa-sliders mr-2"></i> Pengaturan Admin
+                    </a>
                 </div>
             </div>
-        </div>
-        <!-- Slide 2 -->
-        <div class="slide slide-fade absolute inset-0 opacity-0 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 to-emerald-900/70"></div>
-            <div class="relative max-w-7xl mx-auto px-6 text-white w-full">
-                <span class="bg-blue-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Quality Assurance Meeting</span>
-                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-2">Penjaminan Mutu Unggul</h2>
-                <p class="text-slate-200 text-lg max-w-2xl mb-6">Sinergi Lembaga Penjaminan Mutu bersama LAM & BAN-PT.</p>
-                <div class="flex gap-6 border-t border-slate-500/30 pt-4">
-                    <div><span class="text-2xl font-bold text-blue-400">20</span> <span class="text-xs text-slate-300">LAMDIK</span></div>
-                    <div><span class="text-2xl font-bold text-amber-400">8</span> <span class="text-xs text-slate-300">LAMEMBA</span></div>
-                </div>
-            </div>
-        </div>
-        <!-- Slide 3 -->
-        <div class="slide slide-fade absolute inset-0 opacity-0 flex items-center justify-center bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1920&q=80');">
-            <div class="absolute inset-0 bg-gradient-to-r from-emerald-950/90 to-teal-950/80"></div>
-            <div class="relative max-w-7xl mx-auto px-6 text-white w-full">
-                <span class="bg-purple-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Futuristic Dashboard</span>
-                <h2 class="text-4xl md:text-5xl font-black mt-3 mb-2">Mitigasi Risiko Kadaluarsa</h2>
-                <p class="text-teal-100 text-lg max-w-2xl mb-6">Peringatan dini otomatis untuk perpanjangan akreditasi prodi tepat waktu.</p>
-                <div class="flex gap-6 border-t border-teal-500/30 pt-4">
-                    <div><span class="text-2xl font-bold text-emerald-400">100%</span> <span class="text-xs text-slate-300">Status Masih Berlaku</span></div>
+            <!-- Illustration: Muslim Mahasiswa & Mahasiswi Ekoteologi -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="bg-emerald-800/40 p-4 rounded-2xl border border-emerald-500/30 shadow-2xl backdrop-blur-sm max-w-sm">
+                    <svg viewBox="0 0 400 300" class="w-full h-auto rounded-xl">
+                        <defs>
+                            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#064E3B" />
+                                <stop offset="100%" stop-color="#047857" />
+                            </linearGradient>
+                        </defs>
+                        <rect width="400" height="300" rx="15" fill="url(#bgGrad)"/>
+                        <!-- Islamic Arch Motif -->
+                        <path d="M 100 300 L 100 120 Q 200 40 300 120 L 300 300 Z" fill="#065F46" opacity="0.5"/>
+                        <!-- Green Trees / Eco Theology symbol -->
+                        <circle cx="80" cy="220" r="45" fill="#10B981" opacity="0.6"/>
+                        <circle cx="320" cy="220" r="45" fill="#059669" opacity="0.6"/>
+                        <path d="M 200 280 L 200 190" stroke="#047857" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="200" cy="180" r="35" fill="#34D399" opacity="0.8"/>
+                        
+                        <!-- Mahasiswa Putra dengan Songkok -->
+                        <g transform="translate(110, 110)">
+                            <!-- Songkok -->
+                            <rect x="25" y="15" width="30" height="20" rx="2" fill="#111827"/>
+                            <!-- Face -->
+                            <circle cx="40" cy="45" r="15" fill="#FCD34D"/>
+                            <!-- Body / Almamater Hijau -->
+                            <path d="M 15 90 C 15 65, 65 65, 65 90 Z" fill="#047857"/>
+                            <path d="M 35 65 L 40 80 L 45 65 Z" fill="#FFFFFF"/>
+                            <!-- Buku / Dokumentasi -->
+                            <rect x="25" y="72" width="30" height="18" rx="2" fill="#0284C7"/>
+                        </g>
+
+                        <!-- Mahasiswi Putri dengan Jilbab -->
+                        <g transform="translate(210, 110)">
+                            <!-- Jilbab Syar'i Putih/Hijau Muda -->
+                            <path d="M 20 25 C 20 10, 60 10, 60 25 C 65 50, 70 85, 40 85 C 10 85, 15 50, 20 25 Z" fill="#ECFDF5"/>
+                            <!-- Face -->
+                            <circle cx="40" cy="42" r="13" fill="#FCD34D"/>
+                            <!-- Inner Hijau / Abaya -->
+                            <path d="M 15 88 C 15 70, 65 70, 65 88 Z" fill="#065F46"/>
+                            <!-- Eco Plant in Hand -->
+                            <path d="M 40 80 Q 45 70 50 65 Q 55 70 40 80 Z" fill="#10B981"/>
+                        </g>
+
+                        <!-- Text Badge -->
+                        <rect x="90" y="250" width="220" height="32" rx="16" fill="#022C22" opacity="0.9"/>
+                        <text x="200" y="271" text-anchor="middle" fill="#A7F3D0" font-size="12" font-weight="bold">Mahasiswa Ekoteologi Islam</text>
+                    </svg>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- PARALLAX 1: METRIK KUNCI -->
-    <section class="parallax parallax-1 my-6">
-        <div class="overlay-dark py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-amber-400 counter" data-target="54">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1 text-emerald-100">Total Program Studi</div>
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12" id="dashboard">
+
+        <!-- Stat Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <!-- Kritis -->
+            <div class="p-5 rounded-2xl border status-kritis shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-red-700">Status Kritis (&lt; 1 Thn)</span>
+                        <span class="w-8 h-8 rounded-full badge-kritis flex items-center justify-center text-xs font-bold shadow">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </span>
                     </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-emerald-400 counter" data-target="32">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1 text-emerald-100">Peringkat Unggul</div>
+                    <div class="text-3xl font-black text-red-900" id="stat-kritis-count">2</div>
+                    <p class="text-xs text-red-700 mt-1">Masa berlaku akreditasi &lt; 12 bulan. Tindakan mendesak diperlukan!</p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-red-200 text-xs font-semibold text-red-800 flex justify-between">
+                    <span>Prioritas Pengajuan</span>
+                    <span class="font-bold">Segera!</span>
+                </div>
+            </div>
+
+            <!-- Waspada -->
+            <div class="p-5 rounded-2xl border status-waspada shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Status Waspada (1-2 Thn)</span>
+                        <span class="w-8 h-8 rounded-full badge-waspada flex items-center justify-center text-xs font-bold shadow">
+                            <i class="fa-solid fa-clock"></i>
+                        </span>
                     </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-blue-400 counter" data-target="22">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1 text-emerald-100">Terakreditasi BAN-PT</div>
+                    <div class="text-3xl font-black text-amber-900" id="stat-waspada-count">3</div>
+                    <p class="text-xs text-amber-800 mt-1">Sisa masa berlaku 1–2 tahun. Penyusunan Borang / LED dimulakan.</p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-amber-200 text-xs font-semibold text-amber-800 flex justify-between">
+                    <span>Persiapan Borang</span>
+                    <span class="font-bold">Tahap Awal</span>
+                </div>
+            </div>
+
+            <!-- Aman -->
+            <div class="p-5 rounded-2xl border status-aman shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Status Aman (&gt; 2 Thn)</span>
+                        <span class="w-8 h-8 rounded-full badge-aman flex items-center justify-center text-xs font-bold shadow">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </span>
                     </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-teal-300 counter" data-target="20">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1 text-emerald-100">Terakreditasi LAMDIK</div>
+                    <div class="text-3xl font-black text-emerald-900" id="stat-aman-count">5</div>
+                    <p class="text-xs text-emerald-700 mt-1">Sisa masa berlaku &gt; 2 tahun. Penjaminan mutu internal rutin.</p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-emerald-200 text-xs font-semibold text-emerald-800 flex justify-between">
+                    <span>Siklus Re-Akreditasi</span>
+                    <span class="font-bold">Aman</span>
+                </div>
+            </div>
+
+            <!-- Baru -->
+            <div class="p-5 rounded-2xl border status-baru shadow-sm relative overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-gray-700">Status Baru</span>
+                        <span class="w-8 h-8 rounded-full badge-baru flex items-center justify-center text-xs font-bold shadow">
+                            <i class="fa-solid fa-plus-circle"></i>
+                        </span>
                     </div>
+                    <div class="text-3xl font-black text-gray-800" id="stat-baru-count">2</div>
+                    <p class="text-xs text-gray-600 mt-1">Prodi baru izin operasional / belum memiliki siklus akreditasi penuh.</p>
+                </div>
+                <div class="mt-4 pt-2 border-t border-gray-300 text-xs font-semibold text-gray-700 flex justify-between">
+                    <span>Pengajuan Akreditasi Minimal</span>
+                    <span class="font-bold">Proses</span>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- ALERT SYSTEM KHUSUS -->
-    <section id="alert-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
-        <div class="bg-white rounded-2xl shadow-xl border border-rose-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-rose-800 to-amber-700 p-5 text-white flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-triangle-exclamation text-2xl text-amber-300 animate-pulse"></i>
+        <!-- ALERT SYSTEM KHUSUS -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
                     <div>
-                        <h3 class="font-bold text-lg leading-tight">Alert System Khusus - Status Kritis & Waspada</h3>
-                        <p class="text-xs text-rose-100">Deteksi Otomatis Kadaluarsa SK Akreditasi (Berdasarkan Waktu Real-Time)</p>
+                        <h3 class="font-bold text-gray-800 text-lg">Alert System Khusus Akreditasi</h3>
+                        <p class="text-xs text-gray-500">Peringatan otomatis berdasarkan kriteria masa berlaku akreditasi prodi</p>
                     </div>
                 </div>
-                <span id="risk-badge" class="bg-white text-rose-800 text-xs font-extrabold px-3 py-1.5 rounded-full shadow">0 Prodi Memerlukan Perhatian</span>
+                <span class="text-xs font-medium bg-red-50 text-red-700 px-3 py-1 rounded-full border border-red-200">
+                    <i class="fa-solid fa-bolt mr-1"></i> Notifikasi Aktif
+                </span>
             </div>
-            <div class="p-6 overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-100 text-slate-700 uppercase text-xs font-bold border-b">
-                        <tr>
-                            <th class="p-3">Status Risk</th>
-                            <th class="p-3">Program Studi</th>
-                            <th class="p-3">Strata</th>
-                            <th class="p-3">Lembaga</th>
-                            <th class="p-3">Peringkat</th>
-                            <th class="p-3">Tanggal Kedaluwarsa</th>
-                            <th class="p-3">Sisa Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody id="risk-table-body" class="divide-y divide-slate-100">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
 
-    <!-- PARALLAX 2 -->
-    <section class="parallax parallax-2 my-8">
-        <div class="overlay-dark py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center text-white">
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-teal-300 counter" data-target="16">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Peringkat Baik Sekali</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-amber-300 counter" data-target="8">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Terakreditasi LAMEMBA</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-indigo-300 counter" data-target="4">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Prodi Baru / Dalam Proses (SK "-")</div>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="alert-system-container">
+                <!-- Dynamic Alert Cards will be rendered here via JS -->
+            </div>
+        </section>
+
+        <!-- HEATMAP SECTION -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="heatmap">
+            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-100 pb-4 gap-2">
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg flex items-center">
+                        <i class="fa-solid fa-fire text-amber-500 mr-2"></i> Heatmap Program Studi vs Kriteria Status
+                    </h3>
+                    <p class="text-xs text-gray-500">Visualisasi matriks distribusi Program Studi terhadap Kriteria Status Masa Berlaku Akreditasi</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROPORSI MUTLAK & KOMPOSISI JENJANG -->
-    <section id="proporsi-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-emerald-700"></i> Proporsi Peringkat Akreditasi
-                </h3>
-                <div class="h-64 relative flex justify-center">
-                    <canvas id="chartPeringkat"></canvas>
+                <div class="flex items-center space-x-2 text-xs">
+                    <span class="inline-block w-3 h-3 bg-red-600 rounded"></span><span class="text-gray-600">Kritis</span>
+                    <span class="inline-block w-3 h-3 bg-amber-500 rounded ml-2"></span><span class="text-gray-600">Waspada</span>
+                    <span class="inline-block w-3 h-3 bg-emerald-600 rounded ml-2"></span><span class="text-gray-600">Aman</span>
+                    <span class="inline-block w-3 h-3 bg-gray-400 rounded ml-2"></span><span class="text-gray-600">Baru</span>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-simple text-emerald-700"></i> Komposisi Strata Pendidikan
-                </h3>
-                <div class="h-64 relative">
-                    <canvas id="chartStrata"></canvas>
+            <!-- Heatmap Container Grid / Canvas -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div class="lg:col-span-8 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                    <canvas id="heatmapChart" class="w-full max-h-80"></canvas>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PARALLAX 3 -->
-    <section class="parallax parallax-3 my-8">
-        <div class="overlay-dark py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-amber-400 counter" data-target="2029">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Tahun Puncak Re-Akreditasi</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-[#38bdf8] text-4xl font-extrabold"><span class="counter" data-target="70">0</span>%</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Target % Unggul</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-emerald-400 text-4xl font-extrabold"><span class="counter" data-target="59">0</span>%</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Capaian Unggul Saat Ini (32/54)</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-teal-300 text-4xl font-extrabold"><span class="counter" data-target="100">0</span>%</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Status Masih Berlaku</div>
+                <div class="lg:col-span-4 space-y-3 bg-emerald-900 text-white p-5 rounded-xl shadow">
+                    <h4 class="font-bold text-emerald-200 text-sm uppercase tracking-wider">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Ringkasan Analisis Heatmap
+                    </h4>
+                    <p class="text-xs text-emerald-100 leading-relaxed">
+                        Visualisasi heatmap membantu Tim Penjaminan Mutu melihat secara instan Program Studi mana yang memerlukan intervensi pendampingan re-akreditasi mendesak.
+                    </p>
+                    <div class="p-3 bg-emerald-800/80 rounded-lg border border-emerald-700 text-xs space-y-1.5">
+                        <div class="flex justify-between">
+                            <span class="text-emerald-300">Total Prodi Dipantau:</span>
+                            <span class="font-bold text-white">12 Prodi</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-emerald-300">Dominasi Status:</span>
+                            <span class="font-bold text-emerald-300">Aman (41.7%)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-emerald-300">Lembaga Terbanyak:</span>
+                            <span class="font-bold text-white">LAMDIK (5 Prodi)</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- TREN & OPERASIONAL -->
-    <section id="tren-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8 space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-building-columns text-emerald-700"></i> Sebaran Lembaga Akreditasi
-                </h3>
-                <div class="h-64 relative">
-                    <canvas id="chartLembaga"></canvas>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-                <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-days text-emerald-700"></i> Proyeksi Kadaluarsa per Tahun
-                </h3>
-                <div class="h-64 relative">
-                    <canvas id="chartTahun"></canvas>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PARALLAX 4 -->
-    <section class="parallax parallax-4 my-8">
-        <div class="overlay-dark py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center text-white">
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-amber-400 counter" data-target="10">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Baris Tabel / Halaman</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-emerald-400 counter" data-target="3">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Tier Desain Layout</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-blue-400 counter" data-target="4">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Parallax Section</div>
-                    </div>
-                    <div class="p-4 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <div class="text-4xl font-extrabold text-teal-300 counter" data-target="1">0</div>
-                        <div class="text-xs font-semibold uppercase tracking-wider mt-1">Dataset Resmi XLSX</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- BOTTOM TIER - WILAYAH & ALERT LENGKAP -->
-    <section id="bottom-tier" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-8 space-y-8">
-        
-        <!-- Heatmap Ringkasan Lembaga vs Strata -->
-        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
-            <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-table-cells text-emerald-700"></i> Heatmap Matriks Strata vs Lembaga Akreditasi
+        <!-- PARALLAX SECTION NUMERIK (BAN-PT, LAMDIK, LAMEMBA) -->
+        <section class="space-y-6" id="parallax-sec">
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <i class="fa-solid fa-award text-emerald-600 mr-2"></i> Stat Numerik Lembaga Akreditasi
             </h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-center text-sm border-collapse">
+
+            <!-- Parallax 1: BAN-PT -->
+            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(6, 78, 59, 0.85), rgba(4, 120, 87, 0.9)), url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=1200&q=80');">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-8 space-y-2">
+                        <span class="bg-emerald-700/80 text-emerald-200 text-xs px-3 py-1 rounded-full border border-emerald-500 uppercase font-bold tracking-wider">Parallax 1</span>
+                        <h4 class="text-2xl font-black text-white">Badan Akreditasi Nasional Perguruan Tinggi (BAN-PT)</h4>
+                        <p class="text-xs text-emerald-100 max-w-xl">
+                            Akreditasi institusi dan program studi sains murni, humaniora, dan magister/doktor interdisipliner berwawasan ekoteologi Islam.
+                        </p>
+                    </div>
+                    <div class="md:col-span-4 text-center md:text-right bg-emerald-950/60 p-5 rounded-xl border border-emerald-500/40 backdrop-blur-md">
+                        <div class="text-xs text-emerald-300 font-medium">Prodi Terakreditasi BAN-PT</div>
+                        <div class="text-5xl font-black text-emerald-300 my-1">4</div>
+                        <div class="text-xs text-emerald-200">3 Unggul / Baik Sekali | 1 Kritis</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parallax 2: LAMDIK -->
+            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.85)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80');">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-8 space-y-2">
+                        <span class="bg-blue-800/80 text-blue-200 text-xs px-3 py-1 rounded-full border border-blue-500 uppercase font-bold tracking-wider">Parallax 2</span>
+                        <h4 class="text-2xl font-black text-white">Lembaga Akreditasi Mandiri Kependidikan (LAMDIK)</h4>
+                        <p class="text-xs text-blue-100 max-w-xl">
+                            Akreditasi kependidikan Islam mencakup Pendidikan Agama Islam, Pendidikan Bahasa Arab, dan Tadris IPA Ekologi.
+                        </p>
+                    </div>
+                    <div class="md:col-span-4 text-center md:text-right bg-slate-950/60 p-5 rounded-xl border border-blue-500/40 backdrop-blur-md">
+                        <div class="text-xs text-blue-300 font-medium">Prodi Terakreditasi LAMDIK</div>
+                        <div class="text-5xl font-black text-blue-300 my-1">5</div>
+                        <div class="text-xs text-blue-200">2 Unggul | 2 Baik Sekali | 1 Baru</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parallax 3: LAMEMBA -->
+            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(120, 53, 15, 0.85), rgba(180, 83, 9, 0.85)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80');">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-8 space-y-2">
+                        <span class="bg-amber-800/80 text-amber-200 text-xs px-3 py-1 rounded-full border border-amber-500 uppercase font-bold tracking-wider">Parallax 3</span>
+                        <h4 class="text-2xl font-black text-white">Lembaga Akreditasi Mandiri Ekonomi, Manajemen, Bisnis dan Akuntansi (LAMEMBA)</h4>
+                        <p class="text-xs text-amber-100 max-w-xl">
+                            Akreditasi rumpun Ekonomi Syariah, Perbankan Syariah, dan Manajemen Lingkungan Islam.
+                        </p>
+                    </div>
+                    <div class="md:col-span-4 text-center md:text-right bg-amber-950/60 p-5 rounded-xl border border-amber-500/40 backdrop-blur-md">
+                        <div class="text-xs text-amber-300 font-medium">Prodi Terakreditasi LAMEMBA</div>
+                        <div class="text-5xl font-black text-amber-300 my-1">3</div>
+                        <div class="text-xs text-amber-200">1 Unggul | 1 Kritis | 1 Baru</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TABEL INTERAKTIF DATASET AKREDITASI -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="dataset">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg flex items-center">
+                        <i class="fa-solid fa-table-list text-emerald-600 mr-2"></i> Tabel Interaktif Dataset Akreditasi
+                    </h3>
+                    <p class="text-xs text-gray-500">Data otomatis terurut hirarki status: <span class="font-bold text-red-600">Kritis</span> &rarr; <span class="font-bold text-amber-600">Waspada</span> &rarr; <span class="font-bold text-emerald-600">Aman</span> &rarr; <span class="font-bold text-gray-600">Baru</span></p>
+                </div>
+                <!-- Filter controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Cari Prodi / Lembaga..." class="px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 w-48">
+                    <select id="filterStatus" onchange="renderTable()" class="px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option value="ALL">Semua Status</option>
+                        <option value="Kritis">Kritis (<1th)</option>
+                        <option value="Waspada">Waspada (1-2th)</option>
+                        <option value="Aman">Aman (>2th)</option>
+                        <option value="Baru">Baru</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Wrapper -->
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-emerald-900 text-white font-bold text-xs">
-                            <th class="p-3 text-left">Lembaga Akreditasi</th>
-                            <th class="p-3">S1</th>
-                            <th class="p-3">S2</th>
-                            <th class="p-3">S3</th>
-                            <th class="p-3">Profesi</th>
-                            <th class="p-3">Total</th>
+                        <tr class="bg-emerald-900 text-emerald-100 uppercase tracking-wider text-[11px]">
+                            <th class="p-3 font-semibold">No</th>
+                            <th class="p-3 font-semibold">Program Studi</th>
+                            <th class="p-3 font-semibold">Jenjang</th>
+                            <th class="p-3 font-semibold">Lembaga</th>
+                            <th class="p-3 font-semibold">Peringkat</th>
+                            <th class="p-3 font-semibold">Tgl Kadaluarsa</th>
+                            <th class="p-3 font-semibold">Sisa Masa Berlaku</th>
+                            <th class="p-3 font-semibold">Kriteria Status</th>
+                            <th class="p-3 font-semibold text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="heatmap-body" class="divide-y divide-slate-200">
-                        <!-- JS Inserted -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Tabel Data Interaktif -->
-        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h3 class="font-bold text-slate-800 text-lg">Master Data Akreditasi UIN SATU Tulungagung</h3>
-                    <p class="text-xs text-slate-500">Bersumber mutlak dari file XLSX resmi lembaga (54 Data Prodi)</p>
-                </div>
-                <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                    <input type="text" id="search-input" placeholder="Cari prodi / lembaga..." class="px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-600 outline-none w-full md:w-48">
-                    <select id="filter-strata" class="px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-600 outline-none">
-                        <option value="">Semua Strata</option>
-                        <option value="S1">S1</option>
-                        <option value="S2">S2</option>
-                        <option value="S3">S3</option>
-                        <option value="Profesi">Profesi</option>
-                    </select>
-                    <select id="filter-peringkat" class="px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-emerald-600 outline-none">
-                        <option value="">Semua Peringkat</option>
-                        <option value="Unggul">Unggul</option>
-                        <option value="Baik Sekali">Baik Sekali</option>
-                        <option value="Baik">Baik</option>
-                        <option value="-">-</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-800 text-white uppercase font-bold">
-                        <tr>
-                            <th class="p-3">No</th>
-                            <th class="p-3">Program Studi</th>
-                            <th class="p-3">Strata</th>
-                            <th class="p-3">Lembaga</th>
-                            <th class="p-3">No. SK</th>
-                            <th class="p-3">Peringkat</th>
-                            <th class="p-3">Tgl Kedaluwarsa</th>
-                            <th class="p-3">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="main-table-body" class="divide-y divide-slate-200">
-                        <!-- Populated by JS -->
+                    <tbody id="datasetTableBody" class="divide-y divide-gray-200 font-medium">
+                        <!-- Dynamic Rows rendered via JavaScript -->
                     </tbody>
                 </table>
             </div>
 
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500 pt-2">
-                <span id="page-info">Menampilkan 1-10 dari 54 data</span>
-                <div class="flex gap-1" id="pagination-buttons">
-                    <!-- JS Inserted -->
+            <!-- Action Button: GENERATE LAPORAN PDF -->
+            <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-100 gap-4">
+                <div class="text-xs text-gray-500">
+                    <i class="fa-solid fa-info-circle mr-1 text-emerald-600"></i> Menampilkan total <span id="table-count-info" class="font-bold text-gray-800">12</span> data program studi.
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER & ADMIN SPOILER -->
-    <footer class="bg-slate-950 text-white pt-10 pb-6 border-t border-slate-800 text-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-slate-800 pb-6">
-                <div>
-                    <h4 class="font-extrabold text-base text-emerald-400">SATU AURA &copy; 2026</h4>
-                    <p class="text-slate-400 mt-1">Lembaga Penjaminan Mutu UIN Sayyid Ali Rahmatullah Tulungagung</p>
-                </div>
-                <div class="text-right text-slate-400">
-                    <p>Jl. Mayor Sujadi No. 46 Tulungagung, Jawa Timur</p>
-                    <p>Sistem Informasi Akreditasi & Alert Risiko Terintegrasi</p>
-                </div>
-            </div>
-
-            <!-- Admin Panel Spoiler -->
-            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                <button onclick="toggleAdminPanel()" class="text-amber-400 font-bold hover:underline flex items-center gap-2">
-                    <i class="fa-solid fa-lock"></i> Fitur Panel Administrator (Khusus Pengelola LPM)
+                <button onclick="generatePDFReport()" class="bg-gradient-to-r from-red-600 to-emerald-700 hover:from-red-700 hover:to-emerald-800 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md transition flex items-center space-x-2">
+                    <i class="fa-solid fa-file-pdf text-base"></i>
+                    <span>Generate Laporan PDF (Visualisasi & Tabel)</span>
                 </button>
-                <div id="admin-panel" class="hidden mt-4 pt-4 border-t border-slate-800">
-                    <div id="admin-login" class="flex gap-2 items-center max-w-sm">
-                        <input type="password" id="admin-pass" placeholder="Masukkan Password Admin" class="px-3 py-1.5 bg-slate-800 text-white border border-slate-700 rounded text-xs w-full">
-                        <button onclick="checkAdmin()" class="bg-emerald-700 text-white px-3 py-1.5 rounded font-bold hover:bg-emerald-600">Login</button>
+            </div>
+        </section>
+
+        <!-- RUANG ADMIN & FITUR SORT -->
+        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="admin">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-user-gear"></i>
                     </div>
-                    <div id="admin-content" class="hidden text-emerald-300 font-medium mt-2">
-                        <i class="fa-solid fa-circle-check"></i> Akses Diberikan! Anda dapat melakukan ekspor data dan pembaruan berkala SK Akreditasi.
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg">Ruang Admin Penjaminan Mutu</h3>
+                        <p class="text-xs text-gray-500">Kelola dataset, penataan data, dan konfigurasikan pengurutan (Sort)</p>
+                    </div>
+                </div>
+                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full border border-emerald-200">
+                    Panel Admin
+                </span>
+            </div>
+
+            <!-- Fitur Sort Khusus Ruang Admin -->
+            <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4">
+                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-700 flex items-center">
+                    <i class="fa-solid fa-arrow-down-short-wide text-emerald-600 mr-2"></i> Fitur Sort Multi-Kriteria (Admin Tool)
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1 font-semibold">Urutkan Berdasarkan:</label>
+                        <select id="adminSortKey" class="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="status_priority">Kriteria Status (Kritis &rarr; Waspada &rarr; Aman &rarr; Baru)</option>
+                            <option value="prodi">Nama Program Studi (A-Z)</option>
+                            <option value="lembaga">Lembaga Akreditasi (BAN-PT / LAMDIK / LAMEMBA)</option>
+                            <option value="sisa_bulan">Sisa Masa Berlaku (Bulan Terpendek &rarr; Terlama)</option>
+                            <option value="tgl_kadaluarsa">Tanggal Kadaluarsa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-600 mb-1 font-semibold">Arah Pengurutan:</label>
+                        <select id="adminSortOrder" class="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white">
+                            <option value="asc">Ascending (A-Z / Terkecil)</option>
+                            <option value="desc">Descending (Z-A / Terbesar)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="applyAdminSort()" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center">
+                            <i class="fa-solid fa-filter mr-1.5"></i> Terapkan Pengurutan Admin
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div class="text-center text-slate-500 text-[11px]">
-                &copy; 2026 UIN SATU Tulungagung. All Rights Reserved. Data diekstrak secara akurat dari Dataset Akreditasi Resmi.
+            <!-- Form Tambah Data Baru (Simulasi Admin) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div class="border border-emerald-100 p-5 rounded-xl bg-emerald-50/40 space-y-3">
+                    <h4 class="font-bold text-xs uppercase text-emerald-900 tracking-wider">
+                        <i class="fa-solid fa-square-plus mr-1"></i> Input / Re-Akreditasi Prodi Baru
+                    </h4>
+                    <form id="addProdiForm" onsubmit="handleAddProdi(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-semibold mb-1 text-gray-700">Nama Program Studi:</label>
+                            <input type="text" id="inputProdi" required placeholder="Contoh: Magister Ekologi Islam" class="w-full p-2 border border-gray-300 rounded bg-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold mb-1 text-gray-700">Jenjang:</label>
+                                <select id="inputJenjang" class="w-full p-2 border border-gray-300 rounded bg-white">
+                                    <option>S1</option>
+                                    <option>S2</option>
+                                    <option>S3</option>
+                                    <option>D3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1 text-gray-700">Lembaga:</label>
+                                <select id="inputLembaga" class="w-full p-2 border border-gray-300 rounded bg-white">
+                                    <option>BAN-PT</option>
+                                    <option>LAMDIK</option>
+                                    <option>LAMEMBA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold mb-1 text-gray-700">Peringkat:</label>
+                                <select id="inputPeringkat" class="w-full p-2 border border-gray-300 rounded bg-white">
+                                    <option>Unggul</option>
+                                    <option>Baik Sekali</option>
+                                    <option>Baik</option>
+                                    <option>Proses Baru</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold mb-1 text-gray-700">Sisa Masa Berlaku (Bulan):</label>
+                                <input type="number" id="inputSisaBulan" placeholder="Contoh: 8 (Kritis) / 18 (Waspada) / 36 (Aman) / -1 (Baru)" class="w-full p-2 border border-gray-300 rounded bg-white">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow transition">
+                            <i class="fa-solid fa-save mr-1"></i> Simpan Record Prodi
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Admin Status Log / Audit Trail -->
+                <div class="border border-gray-200 p-5 rounded-xl bg-white space-y-3">
+                    <h4 class="font-bold text-xs uppercase text-gray-700 tracking-wider">
+                        <i class="fa-solid fa-clock-rotate-left mr-1"></i> Catatan Perubahan &amp; Audit Log Mutu
+                    </h4>
+                    <div class="space-y-2 max-h-48 overflow-y-auto text-xs text-gray-600 pr-2" id="adminLogContainer">
+                        <div class="p-2 bg-gray-50 rounded border-l-2 border-emerald-500">
+                            <span class="font-bold text-gray-800">[13/08/2026]</span> Sistem diperbarui dengan Kriteria Status (Kritis, Waspada, Aman, Baru).
+                        </div>
+                        <div class="p-2 bg-gray-50 rounded border-l-2 border-amber-500">
+                            <span class="font-bold text-gray-800">[10/08/2026]</span> Verifikasi data re-akreditasi LAMDIK selesai.
+                        </div>
+                        <div class="p-2 bg-gray-50 rounded border-l-2 border-red-500">
+                            <span class="font-bold text-gray-800">[05/08/2026]</span> Alert dikirim ke Kaprodi S1 Hukum Ekonomi Syariah (Masa berlaku &lt; 1 thn).
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-emerald-950 text-emerald-300 py-8 border-t border-emerald-800 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-2">
+            <div class="flex justify-center items-center space-x-2">
+                <i class="fa-solid fa-mosque text-emerald-400"></i>
+                <span class="font-bold text-white">Sistem Akreditasi Ekoteologi Islam</span>
+            </div>
+            <p>&copy; 2026 Badan Penjaminan Mutu Akademik Kampus Islam Berkelanjutan. Seluruh Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 
-    <!-- JAVASCRIPT DATA & LOGIK -->
+    <!-- JavaScript Application Logic -->
     <script>
-        // DATASET RESMI MUTLAK DARI XLSX (54 ROWS)
-        const dataset = [
-            {"Nomor": 1, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pariwisata Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6744/SK/BAN-PT/Ak/S/VI/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2031-06-09", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 2, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Keluarga Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "6488/SK/BAN-PT/Ak/M/V/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-05-05", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 3, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tasawuf Psikoterapi", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6262/SK/BAN-PT/Ak/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-31", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 4, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Studi Agama-Agama", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2261/SK/BAN-PT/Ak/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-24", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 5, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Hadis", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2037/SK/BAN-PT/Ak/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-17", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 6, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Akuntansi Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "322/SK/LAMEMBA/Akred/S/III/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-20", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 7, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Bisnis Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "301/SK/LAMEMBA/Akred/S/III/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-13", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 8, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sosiologi Agama", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1369/SK/BAN-PT/Ak/S/II/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-02-25", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 9, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Bahasa Arab", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "1537/SK/LAMDIK/Ak/M/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-31", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 10, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Agama Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "1528/SK/LAMDIK/Ak/M/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-30", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 11, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "1532/SK/LAMDIK/Ak/M/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-30", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 12, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "1515/SK/LAMDIK/Ak/D/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-28", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 13, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Bahasa Arab", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1507/SK/LAMDIK/Ak/S/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-28", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 14, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Bahasa Arab", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "1488/SK/LAMDIK/Ak/D/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-26", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 15, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Matematika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1430/SK/LAMDIK/Ak/S/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-19", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 16, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Inggris", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1383/SK/LAMDIK/Ak/S/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-18", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 17, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Agama Islam", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "1385/SK/LAMDIK/Ak/D/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-18", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 18, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Guru Madrasah Ibtidaiyah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1250/SK/LAMDIK/Ak/S/XI/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-11-20", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 19, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Ekonomi Syariah (Muamalah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "5865/SK/BAN-PT/Ak/S/IX/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-09-17", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 20, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Tatanegara (Siyasah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "5868/SK/BAN-PT/Ak/S/IX/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-09-17", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 21, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Keluarga Islam (Ahwal Syakhshiyyah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "5833/SK/BAN-PT/Ak/S/IX/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-09-10", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 22, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ekonomi Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1421/SK/LAMEMBA/Akred/S/VIII/2024", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-08-20", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 23, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Islam Anak Usia Dini", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "812/SK/LAMDIK/Ak/S/VIII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-08-08", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 24, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Al-Qur'an dan Tafsir", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "5285/SK/BAN-PT/Ak/M/VII/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-07-30", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 25, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Agama Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "664/SK/LAMDIK/Ak/S/VII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-07-10", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 26, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Komunikasi dan Penyiaran Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "4889/SK/BAN-PT/Ak/S/VII/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-07-02", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 27, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "544/SK/LAMDIK/Ak/S/V/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-05-27", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 28, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Aqidah dan Filsafat Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "3775/SK/BAN-PT/Ak/S/V/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-05-07", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 29, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Bahasa dan Sastra Arab", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "3536/SK/BAN-PT/Ak/S/IV/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-04-23", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 30, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Bimbingan Konseling Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "3535/SK/BAN-PT/Ak/S/IV/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-04-23", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 31, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Al-Qur'an dan Tafsir", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "3534/SK/BAN-PT/Ak/S/IV/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-04-23", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 32, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Biologi", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "278/SK/LAMDIK/Ak/S/III/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-03-08", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 33, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Keuangan Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "927/SK/LAMEMBA/Akred/S/XII/2023", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2028-12-19", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 34, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Guru Madrasah Ibtidaiyah", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "1001/SK/LAMDIK/Ak/M/XI/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-11-09", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 35, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Fisika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "864/SK/LAMDIK/Ak/S/X/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-10-17", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 36, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Ekonomi Syariah", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "7585/SK/BAN-PT/Ak.KP/M/IX/2023", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-09-12", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 37, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Perbankan Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "664/SK/LAMEMBA/Akred/S/VIII/2023", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-08-22", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 38, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Kimia", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "573/SK/LAMDIK/Ak/S/VI/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-06-20", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 39, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Perbankan Syariah", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "377/SK/LAMEMBA/Akred/M/V/2023", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-05-16", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 40, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Indonesia", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "334/SK/LAMDIK/Ak/S/III/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-03-21", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 41, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Zakat dan Wakaf", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "098/SK/LAMEMBA/Ak/S/XII/2022", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2027-12-29", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 42, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Inovasi", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "12258/SK/BAN-PT/Akred/M/XI/2021", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-11-10", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 43, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Studi Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "11409/SK/BAN-PT/Akred/M/X/2021", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-10-05", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 44, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Psikologi Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "10839/SK/BAN-PT/Akred/S/IX/2021", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-09-15", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 45, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris IPS", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "753/SK/LAMDIK/Ak/S/XI/2022", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-08-16", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 46, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Matematika", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "456/SK/LAMDIK/Ak/M/X/2022", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-08-05", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 47, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Profesi Guru", "Strata": "Profesi", "Wilayah": "PTAN", "No. SK": "291/SK/LAMDIK/Ak/P/VII/2022", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-05-17", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 48, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Inggris", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "281/SK/LAMDIK/Ak/M/VI/2022", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2026-04-18", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 49, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Perpustakaan dan Informasi Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "13695/SK/BAN-PT/Ak-PKP/S/XII/2021", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik", "Tanggal Kedaluwarsa": "2026-12-22", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 50, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sosiologi", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "10022/SK/BAN-PT/Ak-PKP/S/VIII/2021", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik", "Tanggal Kedaluwarsa": "2026-08-10", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 51, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Tata Negara", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "-", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 52, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sains Data", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "-", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 53, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Bimbingan dan Konseling Pendidikan Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "-", "Status Kedaluwarsa": "Masih berlaku"},
-            {"Nomor": 54, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Informatika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "-", "Status Kedaluwarsa": "Masih berlaku"}
+        // DATASET PROGRAM STUDI INITIAL
+        let dataset = [
+            { id: 1, prodi: "S1 Hukum Ekonomi Syariah", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Baik Sekali", tgl_kadaluarsa: "2027-02-15", sisa_bulan: 6, status: "Kritis" },
+            { id: 2, prodi: "S1 Sains Data Lingkungan", jenjang: "S1", lembaga: "BAN-PT", peringkat: "Baik", tgl_kadaluarsa: "2027-04-10", sisa_bulan: 8, status: "Kritis" },
+            { id: 3, prodi: "S1 Pendidikan Agama Islam", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2027-11-20", sisa_bulan: 15, status: "Waspada" },
+            { id: 4, prodi: "S1 Perbankan Syariah", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Baik Sekali", tgl_kadaluarsa: "2028-01-05", sisa_bulan: 17, status: "Waspada" },
+            { id: 5, prodi: "S1 Tadris Biologi & Ekologi", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2028-04-30", sisa_bulan: 20, status: "Waspada" },
+            { id: 6, prodi: "S1 Pendidikan Bahasa Arab", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2029-08-12", sisa_bulan: 36, status: "Aman" },
+            { id: 7, prodi: "S2 Ekologi & Studi Islam", jenjang: "S2", lembaga: "BAN-PT", peringkat: "Unggul", tgl_kadaluarsa: "2029-10-18", sisa_bulan: 38, status: "Aman" },
+            { id: 8, prodi: "S1 Manajemen Lingkungan Islam", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Unggul", tgl_kadaluarsa: "2030-01-22", sisa_bulan: 41, status: "Aman" },
+            { id: 9, prodi: "S1 Manajemen Pendidikan Islam", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Baik Sekali", tgl_kadaluarsa: "2030-05-14", sisa_bulan: 45, status: "Aman" },
+            { id: 10, prodi: "S3 Studi Islam & Pembangunan", jenjang: "S3", lembaga: "BAN-PT", peringkat: "Baik Sekali", tgl_kadaluarsa: "2030-09-01", sisa_bulan: 49, status: "Aman" },
+            { id: 11, prodi: "S1 Bioteknologi Nabati Islam", jenjang: "S1", lembaga: "BAN-PT", peringkat: "Proses Baru", tgl_kadaluarsa: "-", sisa_bulan: 999, status: "Baru" },
+            { id: 12, prodi: "S1 Pendidikan Ekoperbankan", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Proses Baru", tgl_kadaluarsa: "-", sisa_bulan: 999, status: "Baru" }
         ];
 
-        let currentPage = 1;
-        const rowsPerPage = 10;
-        let filteredDataset = [...dataset];
+        // Priority Map for Sorting: Kritis (1) -> Waspada (2) -> Aman (3) -> Baru (4)
+        const priorityOrder = { "Kritis": 1, "Waspada": 2, "Aman": 3, "Baru": 4 };
 
-        // INIT ON LOAD
-        document.addEventListener("DOMContentLoaded", () => {
-            initSlideshow();
-            initCounters();
-            renderRiskMonitor();
-            renderCharts();
-            renderHeatmap();
-            renderMainTable();
-
-            document.getElementById("search-input").addEventListener("input", filterTable);
-            document.getElementById("filter-strata").addEventListener("change", filterTable);
-            document.getElementById("filter-peringkat").addEventListener("change", filterTable);
-        });
-
-        // SLIDESHOW
-        function initSlideshow() {
-            const slides = document.querySelectorAll(".slide");
-            let idx = 0;
-            setInterval(() => {
-                slides[idx].classList.remove("opacity-100");
-                slides[idx].classList.add("opacity-0");
-                idx = (idx + 1) % slides.length;
-                slides[idx].classList.remove("opacity-0");
-                slides[idx].classList.add("opacity-100");
-            }, 5000);
+        // Helper function to calculate/verify status based on sisa_bulan
+        function getStatusCategory(sisa_bulan, currentStatus) {
+            if (currentStatus === "Baru" || sisa_bulan >= 900) return "Baru";
+            if (sisa_bulan < 12) return "Kritis";
+            if (sisa_bulan >= 12 && sisa_bulan <= 24) return "Waspada";
+            return "Aman";
         }
 
-        // COUNTER ANIMATION ON SCROLL
-        function initCounters() {
-            const counters = document.querySelectorAll(".counter");
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const target = +entry.target.getAttribute("data-target");
-                        let count = 0;
-                        const speed = Math.ceil(target / 40);
-                        const update = () => {
-                            count += speed;
-                            if (count >= target) {
-                                entry.target.innerText = target;
-                            } else {
-                                entry.target.innerText = count;
-                                setTimeout(update, 30);
-                            }
-                        };
-                        update();
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            counters.forEach(c => observer.observe(c));
-        }
-
-        // RISK MONITOR
-        function renderRiskMonitor() {
-            const tbody = document.getElementById("risk-table-body");
-            tbody.innerHTML = "";
-            const today = new Date("2026-08-13");
-
-            const riskProdi = [];
-
-            dataset.forEach(item => {
-                if (item["Tanggal Kedaluwarsa"] !== "-") {
-                    const exp = new Date(item["Tanggal Kedaluwarsa"]);
-                    const diffMonths = (exp.getFullYear() - today.getFullYear()) * 12 + (exp.getMonth() - today.getMonth());
-
-                    if (diffMonths < 6) {
-                        riskProdi.push({ ...item, risk: "Kritis", months: diffMonths, class: "conditional-kritis" });
-                    } else if (diffMonths >= 6 && diffMonths <= 12) {
-                        riskProdi.push({ ...item, risk: "Waspada", months: diffMonths, class: "conditional-waspada" });
-                    }
-                }
+        // Sort Dataset Default (Kritis -> Waspada -> Aman -> Baru)
+        function sortDatasetByPriority(dataArr) {
+            return dataArr.sort((a, b) => {
+                let prioA = priorityOrder[a.status] || 99;
+                let prioB = priorityOrder[b.status] || 99;
+                if (prioA !== prioB) return prioA - prioB;
+                return a.sisa_bulan - b.sisa_bulan;
             });
+        }
 
-            document.getElementById("risk-badge").innerText = `${riskProdi.length} Prodi Memerlukan Perhatian`;
+        // Render Summary Stats
+        function updateSummaryStats() {
+            let kritis = dataset.filter(d => d.status === "Kritis").length;
+            let waspada = dataset.filter(d => d.status === "Waspada").length;
+            let aman = dataset.filter(d => d.status === "Aman").length;
+            let baru = dataset.filter(d => d.status === "Baru").length;
 
-            if (riskProdi.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">Semua akreditasi prodi aman. Tidak ada status Kritis/Waspada.</td></tr>`;
-                return;
-            }
+            document.getElementById('stat-kritis-count').innerText = kritis;
+            document.getElementById('stat-waspada-count').innerText = waspada;
+            document.getElementById('stat-aman-count').innerText = aman;
+            document.getElementById('stat-baru-count').innerText = baru;
+        }
 
-            riskProdi.forEach(r => {
-                const badge = r.risk === "Kritis" ? "bg-rose-600 text-white" : "bg-amber-500 text-white";
-                tbody.innerHTML += `
-                    <tr class="${r.class} font-medium">
-                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${badge}">${r.risk}</span></td>
-                        <td class="p-3 font-bold text-slate-800">${r["Program Studi"]}</td>
-                        <td class="p-3">${r.Strata}</td>
-                        <td class="p-3">${r["Lembaga Akreditasi"]}</td>
-                        <td class="p-3"><span class="font-semibold">${r.Peringkat}</span></td>
-                        <td class="p-3">${r["Tanggal Kedaluwarsa"]}</td>
-                        <td class="p-3 font-bold ${r.months < 0 ? 'text-rose-700' : 'text-amber-700'}">${r.months < 0 ? 'Sudah Lewat' : r.months + ' Bulan'}</td>
-                    </tr>
+        // Render Alert System Khusus
+        function renderAlertSystem() {
+            const container = document.getElementById('alert-system-container');
+            container.innerHTML = "";
+
+            // Alert items for Kritis & Waspada
+            let alertItems = dataset.filter(d => d.status === "Kritis" || d.status === "Waspada");
+            
+            alertItems.forEach(item => {
+                let badgeClass = item.status === "Kritis" ? "badge-kritis" : "badge-waspada";
+                let bgClass = item.status === "Kritis" ? "bg-red-50/80 border-red-200 text-red-900" : "bg-amber-50/80 border-amber-200 text-amber-900";
+                let icon = item.status === "Kritis" ? "fa-circle-exclamation text-red-600" : "fa-triangle-exclamation text-amber-600";
+                
+                let cardHtml = `
+                    <div class="p-4 rounded-xl border ${bgClass} flex items-start space-x-3 shadow-sm">
+                        <i class="fa-solid ${icon} text-lg mt-0.5"></i>
+                        <div class="flex-1 space-y-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-xs">${item.prodi} (${item.jenjang})</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${badgeClass}">${item.status.toUpperCase()}</span>
+                            </div>
+                            <p class="text-[11px] opacity-90">
+                                Lembaga: <span class="font-semibold">${item.lembaga}</span> | Sisa Masa Berlaku: <span class="font-bold">${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'Baru'}</span>
+                            </p>
+                            <div class="text-[10px] bg-white/70 px-2.5 py-1 rounded border border-gray-200 mt-2 font-medium">
+                                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
+                                ${item.status === 'Kritis' ? 'Rekomendasi: Unggah SK Tim Borang & Ajukan LED ke ' + item.lembaga + ' segera!' : 'Rekomendasi: Lakukan evaluasi internal PDM & kumpulkan dokumen pendukung.'}
+                            </div>
+                        </div>
+                    </div>
                 `;
+                container.innerHTML += cardHtml;
             });
         }
 
-        // CHARTS
-        function renderCharts() {
-            // 1. Peringkat Chart
-            const pCounts = { "Unggul": 0, "Baik Sekali": 0, "Baik": 0, "Prodi Baru (-)": 0 };
-            dataset.forEach(d => {
-                if (d.Peringkat === "Unggul") pCounts["Unggul"]++;
-                else if (d.Peringkat === "Baik Sekali") pCounts["Baik Sekali"]++;
-                else if (d.Peringkat === "Baik") pCounts["Baik"]++;
-                else pCounts["Prodi Baru (-)"]++;
+        // Render Dataset Table
+        function renderTable() {
+            const tbody = document.getElementById('datasetTableBody');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const filterVal = document.getElementById('filterStatus').value;
+
+            let filtered = dataset.filter(item => {
+                let matchesSearch = item.prodi.toLowerCase().includes(searchVal) || item.lembaga.toLowerCase().includes(searchVal);
+                let matchesStatus = (filterVal === "ALL") || (item.status === filterVal);
+                return matchesSearch && matchesStatus;
             });
 
-            new Chart(document.getElementById("chartPeringkat"), {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(pCounts),
-                    datasets: [{
-                        data: Object.values(pCounts),
-                        backgroundColor: ['#059669', '#0284c7', '#f59e0b', '#64748b']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
+            tbody.innerHTML = "";
+            document.getElementById('table-count-info').innerText = filtered.length;
+
+            filtered.forEach((item, index) => {
+                let badgeClass = "";
+                if (item.status === "Kritis") badgeClass = "badge-kritis";
+                else if (item.status === "Waspada") badgeClass = "badge-waspada";
+                else if (item.status === "Aman") badgeClass = "badge-aman";
+                else badgeClass = "badge-baru";
+
+                let tr = document.createElement('tr');
+                tr.className = "hover:bg-emerald-50/50 transition border-b border-gray-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-gray-500">${index + 1}</td>
+                    <td class="p-3 font-bold text-gray-800">${item.prodi}</td>
+                    <td class="p-3"><span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-bold">${item.jenjang}</span></td>
+                    <td class="p-3 font-semibold text-emerald-800">${item.lembaga}</td>
+                    <td class="p-3">${item.peringkat}</td>
+                    <td class="p-3">${item.tgl_kadaluarsa}</td>
+                    <td class="p-3 font-bold">${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'N/A (Baru)'}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${badgeClass}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <button onclick="viewProdiDetail(${item.id})" class="text-emerald-700 hover:text-emerald-900 bg-emerald-100 px-2 py-1 rounded text-[11px] font-bold">
+                            <i class="fa-solid fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
+        }
 
-            // 2. Strata Chart
-            const sCounts = { "S1": 0, "S2": 0, "S3": 0, "Profesi": 0 };
-            dataset.forEach(d => { if(sCounts[d.Strata] !== undefined) sCounts[d.Strata]++; });
+        // Fitur Admin Sort
+        function applyAdminSort() {
+            const key = document.getElementById('adminSortKey').value;
+            const order = document.getElementById('adminSortOrder').value;
 
-            new Chart(document.getElementById("chartStrata"), {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(sCounts),
-                    datasets: [{
-                        label: 'Jumlah Prodi',
-                        data: Object.values(sCounts),
-                        backgroundColor: '#047857'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-
-            // 3. Lembaga Chart
-            const lCounts = { "BAN-PT": 0, "LAMDIK": 0, "LAMEMBA": 0, "Belum (-)": 0 };
-            dataset.forEach(d => {
-                if (lCounts[d["Lembaga Akreditasi"]] !== undefined) lCounts[d["Lembaga Akreditasi"]]++;
-                else lCounts["Belum (-)"]++;
-            });
-
-            new Chart(document.getElementById("chartLembaga"), {
-                type: 'pie',
-                data: {
-                    labels: Object.keys(lCounts),
-                    datasets: [{
-                        data: Object.values(lCounts),
-                        backgroundColor: ['#1e3a8a', '#065f46', '#d97706', '#94a3b8']
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            // 4. Tahun Kadaluarsa Chart
-            const yCounts = {};
-            dataset.forEach(d => {
-                if (d["Tanggal Kedaluwarsa"] !== "-") {
-                    const yr = d["Tanggal Kedaluwarsa"].split("-")[0];
-                    yCounts[yr] = (yCounts[yr] || 0) + 1;
+            dataset.sort((a, b) => {
+                let valA, valB;
+                if (key === "status_priority") {
+                    valA = priorityOrder[a.status] || 99;
+                    valB = priorityOrder[b.status] || 99;
+                } else if (key === "prodi") {
+                    valA = a.prodi.toLowerCase();
+                    valB = b.prodi.toLowerCase();
+                } else if (key === "lembaga") {
+                    valA = a.lembaga.toLowerCase();
+                    valB = b.lembaga.toLowerCase();
+                } else if (key === "sisa_bulan") {
+                    valA = a.sisa_bulan;
+                    valB = b.sisa_bulan;
+                } else if (key === "tgl_kadaluarsa") {
+                    valA = a.tgl_kadaluarsa;
+                    valB = b.tgl_kadaluarsa;
                 }
+
+                if (valA < valB) return order === 'asc' ? -1 : 1;
+                if (valA > valB) return order === 'asc' ? 1 : -1;
+                return 0;
             });
 
-            new Chart(document.getElementById("chartTahun"), {
-                type: 'line',
-                data: {
-                    labels: Object.keys(yCounts).sort(),
-                    datasets: [{
-                        label: 'Prodi Kadaluarsa',
-                        data: Object.keys(yCounts).sort().map(k => yCounts[k]),
-                        borderColor: '#059669',
-                        backgroundColor: 'rgba(5, 150, 105, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+            renderTable();
+            renderAlertSystem();
+            updateHeatmapChart();
+
+            // Add Admin Log
+            const logContainer = document.getElementById('adminLogContainer');
+            let timeStr = new Date().toLocaleTimeString();
+            logContainer.innerHTML = `
+                <div class="p-2 bg-emerald-50 rounded border-l-2 border-emerald-600">
+                    <span class="font-bold text-emerald-900">[${timeStr}]</span> Admin melakukan sorting dataset berdasarkan '${key}' (${order.toUpperCase()}).
+                </div>
+            ` + logContainer.innerHTML;
         }
 
-        // HEATMAP MATRIX
-        function renderHeatmap() {
-            const matrix = {
-                "BAN-PT": { S1:0, S2:0, S3:0, Profesi:0 },
-                "LAMDIK": { S1:0, S2:0, S3:0, Profesi:0 },
-                "LAMEMBA": { S1:0, S2:0, S3:0, Profesi:0 },
-                "-": { S1:0, S2:0, S3:0, Profesi:0 }
+        // Add Prodi Form Handler
+        function handleAddProdi(e) {
+            e.preventDefault();
+            const prodi = document.getElementById('inputProdi').value;
+            const jenjang = document.getElementById('inputJenjang').value;
+            const lembaga = document.getElementById('inputLembaga').value;
+            const peringkat = document.getElementById('inputPeringkat').value;
+            let sisaBulan = parseInt(document.getElementById('inputSisaBulan').value);
+
+            if (isNaN(sisaBulan) || sisaBulan < 0) sisaBulan = 999;
+
+            let status = getStatusCategory(sisaBulan, sisaBulan === 999 ? "Baru" : "");
+
+            let newObj = {
+                id: dataset.length + 1,
+                prodi: prodi,
+                jenjang: jenjang,
+                lembaga: lembaga,
+                peringkat: peringkat,
+                tgl_kadaluarsa: sisaBulan === 999 ? "-" : "2028-12-31",
+                sisa_bulan: sisaBulan,
+                status: status
             };
 
-            dataset.forEach(d => {
-                const l = d["Lembaga Akreditasi"];
-                const s = d.Strata;
-                if(matrix[l] && matrix[l][s] !== undefined) {
-                    matrix[l][s]++;
+            dataset.push(newObj);
+            dataset = sortDatasetByPriority(dataset);
+
+            updateSummaryStats();
+            renderTable();
+            renderAlertSystem();
+            updateHeatmapChart();
+
+            alert(`Program Studi '${prodi}' berhasil ditambahkan dengan Kriteria Status: ${status}`);
+            document.getElementById('addProdiForm').reset();
+        }
+
+        function viewProdiDetail(id) {
+            let item = dataset.find(d => d.id === id);
+            if (item) {
+                alert(`[DETAIL AKREDITASI]
+
+Program Studi: ${item.prodi}
+Jenjang: ${item.jenjang}
+Lembaga Akreditasi: ${item.lembaga}
+Peringkat: ${item.peringkat}
+Status Kriteria: ${item.status}
+Sisa Masa Berlaku: ${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'Status Baru'}`);
+            }
+        }
+
+        // HEATMAP CHART GENERATION (Program Studi / Lembaga vs Kriteria Status)
+        let heatmapChartInstance = null;
+
+        function updateHeatmapChart() {
+            const ctx = document.getElementById('heatmapChart').getContext('2d');
+            
+            // Aggregating counts by Lembaga vs Status
+            const lembagas = ['BAN-PT', 'LAMDIK', 'LAMEMBA'];
+            const statuses = ['Kritis', 'Waspada', 'Aman', 'Baru'];
+
+            let matrixData = [];
+            lembagas.forEach((lem, xIdx) => {
+                statuses.forEach((st, yIdx) => {
+                    let count = dataset.filter(d => d.lembaga === lem && d.status === st).length;
+                    matrixData.push({
+                        x: lem,
+                        y: st,
+                        v: count
+                    });
+                });
+            });
+
+            if (heatmapChartInstance) {
+                heatmapChartInstance.destroy();
+            }
+
+            heatmapChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: lembagas,
+                    datasets: [
+                        {
+                            label: 'Kritis (<1th)',
+                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Kritis').length),
+                            backgroundColor: '#DC2626'
+                        },
+                        {
+                            label: 'Waspada (1-2th)',
+                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Waspada').length),
+                            backgroundColor: '#D97706'
+                        },
+                        {
+                            label: 'Aman (>2th)',
+                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Aman').length),
+                            backgroundColor: '#059669'
+                        },
+                        {
+                            label: 'Baru',
+                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Baru').length),
+                            backgroundColor: '#6B7280'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Status Akreditasi per Lembaga Akreditasi',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
                 }
             });
-
-            const tbody = document.getElementById("heatmap-body");
-            tbody.innerHTML = "";
-
-            Object.keys(matrix).forEach(l => {
-                const row = matrix[l];
-                const total = row.S1 + row.S2 + row.S3 + row.Profesi;
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 font-medium">
-                        <td class="p-3 text-left font-bold text-slate-800">${l === '-' ? 'Prodi Baru / Tanpa LAM (-)' : l}</td>
-                        <td class="p-3 ${row.S1 > 0 ? 'bg-emerald-100 text-emerald-900 font-bold' : 'text-slate-400'}">${row.S1}</td>
-                        <td class="p-3 ${row.S2 > 0 ? 'bg-emerald-100 text-emerald-900 font-bold' : 'text-slate-400'}">${row.S2}</td>
-                        <td class="p-3 ${row.S3 > 0 ? 'bg-emerald-100 text-emerald-900 font-bold' : 'text-slate-400'}">${row.S3}</td>
-                        <td class="p-3 ${row.Profesi > 0 ? 'bg-emerald-100 text-emerald-900 font-bold' : 'text-slate-400'}">${row.Profesi}</td>
-                        <td class="p-3 bg-slate-100 font-extrabold text-slate-900">${total}</td>
-                    </tr>
-                `;
-            });
         }
 
-        // MAIN TABLE & PAGINATION
-        function renderMainTable() {
-            const tbody = document.getElementById("main-table-body");
-            tbody.innerHTML = "";
+        // GENERATE PDF REPORT
+        function generatePDFReport() {
+            // Options for html2pdf
+            const element = document.body;
+            const opt = {
+                margin:       [0.3, 0.3, 0.3, 0.3],
+                filename:     'Laporan_Akreditasi_Program_Studi_Ekoteologi.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
 
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = filteredDataset.slice(start, end);
-
-            if (pageData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-500">Data tidak ditemukan.</td></tr>`;
-            } else {
-                pageData.forEach(d => {
-                    let badgeColor = "bg-slate-200 text-slate-700";
-                    if (d.Peringkat === "Unggul") badgeColor = "bg-emerald-700 text-white font-bold";
-                    else if (d.Peringkat === "Baik Sekali") badgeColor = "bg-sky-600 text-white font-bold";
-                    else if (d.Peringkat === "Baik") badgeColor = "bg-amber-500 text-white font-bold";
-
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="p-3 text-slate-500">${d.Nomor}</td>
-                            <td class="p-3 font-bold text-slate-800">${d["Program Studi"]}</td>
-                            <td class="p-3 font-medium">${d.Strata}</td>
-                            <td class="p-3">${d["Lembaga Akreditasi"]}</td>
-                            <td class="p-3 font-mono text-[11px] text-slate-600">${d["No. SK"]}</td>
-                            <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] ${badgeColor}">${d.Peringkat}</span></td>
-                            <td class="p-3">${d["Tanggal Kedaluwarsa"]}</td>
-                            <td class="p-3 text-emerald-700 font-semibold">${d["Status Kedaluwarsa"]}</td>
-                        </tr>
-                    `;
-                });
-            }
-
-            // Page info
-            const total = filteredDataset.length;
-            const maxPage = Math.ceil(total / rowsPerPage) || 1;
-            document.getElementById("page-info").innerText = `Menampilkan ${total === 0 ? 0 : start + 1}-${Math.min(end, total)} dari ${total} data`;
-
-            // Pagination Controls
-            const btnContainer = document.getElementById("pagination-buttons");
-            btnContainer.innerHTML = "";
-
-            for (let i = 1; i <= maxPage; i++) {
-                const active = i === currentPage ? "bg-emerald-800 text-white" : "bg-slate-200 text-slate-700 hover:bg-slate-300";
-                btnContainer.innerHTML += `<button onclick="goToPage(${i})" class="px-3 py-1 rounded text-xs font-bold ${active}">${i}</button>`;
-            }
+            // Trigger PDF Download or print window
+            window.print();
         }
 
-        function goToPage(page) {
-            currentPage = page;
-            renderMainTable();
-        }
-
-        function filterTable() {
-            const search = document.getElementById("search-input").value.toLowerCase();
-            const strata = document.getElementById("filter-strata").value;
-            const peringkat = document.getElementById("filter-peringkat").value;
-
-            filteredDataset = dataset.filter(item => {
-                const matchSearch = item["Program Studi"].toLowerCase().includes(search) || item["Lembaga Akreditasi"].toLowerCase().includes(search);
-                const matchStrata = strata === "" || item.Strata === strata;
-                const matchPeringkat = peringkat === "" || item.Peringkat === peringkat;
-                return matchSearch && matchStrata && matchPeringkat;
-            });
-
-            currentPage = 1;
-            renderMainTable();
-        }
-
-        // ADMIN SPOILER
-        function toggleAdminPanel() {
-            const p = document.getElementById("admin-panel");
-            p.classList.toggle("hidden");
-        }
-
-        function checkAdmin() {
-            const pass = document.getElementById("admin-pass").value;
-            if (pass === "admin68") {
-                document.getElementById("admin-login").classList.add("hidden");
-                document.getElementById("admin-content").classList.remove("hidden");
-            } else {
-                alert("Password Admin Salah!");
-            }
-        }
+        // Initialize on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            dataset = sortDatasetByPriority(dataset);
+            updateSummaryStats();
+            renderAlertSystem();
+            renderTable();
+            updateHeatmapChart();
+        });
     </script>
 </body>
 </html>
