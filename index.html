@@ -3,879 +3,815 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi & Alert Akreditasi Program Studi (Ekoteologi Islam)</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js & Heatmap plugin support -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.1/dist/chartjs-chart-matrix.min.js"></script>
-    <!-- FontAwesome -->
+    <title>Sistem Informasi Akreditasi Ekoteologi Islam</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- html2pdf.js for generating PDF client-side -->
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2pdf.js for PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        :root {
+            --primary-green: #1b4332;
+            --secondary-green: #2d6a4f;
+            --accent-gold: #d4af37;
+            --light-bg: #f8f9fa;
+            /* Status Colors */
+            --status-kritis: #dc3545; /* Red <1th */
+            --status-waspada: #ffc107; /* Yellow 1-2th */
+            --status-aman: #28a745;   /* Green >2th */
+            --status-baru: #6c757d;   /* Grey Baru */
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8FAF9;
-            color: #1F2937;
+            background-color: #f4f6f9;
+            color: #333;
+            scroll-behavior: smooth;
         }
-        .bg-islamic-pattern {
-            background-color: #064E3B;
-            background-image: radial-gradient(#10B981 0.75px, transparent 0.75px), radial-gradient(#10B981 0.75px, #064E3B 0.75px);
-            background-size: 30px 30px;
-            background-position: 0 0,15px 15px;
+
+        /* Navbar */
+        .navbar-custom {
+            background-color: var(--primary-green);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .parallax {
+        .navbar-brand, .nav-link {
+            color: #ffffff !important;
+        }
+        .nav-link:hover {
+            color: var(--accent-gold) !important;
+        }
+
+        /* Hero & Illustrations */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(27,67,50,0.95), rgba(45,106,79,0.85)), 
+                        url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=1350&q=80') center/cover;
+            color: white;
+            padding: 80px 0 60px 0;
+            border-bottom: 5px solid var(--accent-gold);
+        }
+
+        .avatar-illustration {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 4px solid var(--accent-gold);
+            background-color: #ffffff;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            padding: 5px;
+        }
+
+        /* Parallax Sections */
+        .parallax-sec {
+            position: relative;
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
+            padding: 90px 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
         }
-        /* Status Colors */
-        .status-kritis { background-color: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
-        .badge-kritis { background-color: #DC2626; color: white; }
-        
-        .status-waspada { background-color: #FFFBEB; color: #92400E; border-color: #FCD34D; }
-        .badge-waspada { background-color: #D97706; color: white; }
-        
-        .status-aman { background-color: #ECFDF5; color: #065F46; border-color: #6EE7B7; }
-        .badge-aman { background-color: #059669; color: white; }
-        
-        .status-baru { background-color: #F3F4F6; color: #374151; border-color: #D1D5DB; }
-        .badge-baru { background-color: #6B7280; color: white; }
+        .parallax-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 37, 28, 0.78);
+            z-index: 1;
+        }
+        .parallax-content {
+            position: relative;
+            z-index: 2;
+        }
 
+        #parallax-1 {
+            background-image: url('https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1350&q=80');
+        }
+        #parallax-2 {
+            background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1350&q=80');
+        }
+        #parallax-3 {
+            background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        /* Badge Status */
+        .badge-kritis { background-color: var(--status-kritis) !important; color: white; }
+        .badge-waspada { background-color: var(--status-waspada) !important; color: #212529; }
+        .badge-aman { background-color: var(--status-aman) !important; color: white; }
+        .badge-baru { background-color: var(--status-baru) !important; color: white; }
+
+        /* Card Styles */
+        .custom-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: white;
+            margin-bottom: 25px;
+        }
+        .custom-card-header {
+            background-color: white;
+            border-bottom: 2px solid #f0f0f0;
+            padding: 18px 24px;
+            font-weight: 700;
+            color: var(--primary-green);
+        }
+
+        /* Alert System Cards */
+        .alert-item {
+            border-left: 6px solid #ccc;
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .alert-item.kritis { border-left-color: var(--status-kritis); background: #fff5f5; }
+        .alert-item.waspada { border-left-color: var(--status-waspada); background: #fffdf0; }
+        .alert-item.aman { border-left-color: var(--status-aman); background: #f4faf5; }
+        .alert-item.baru { border-left-color: var(--status-baru); background: #f8f9fa; }
+
+        /* Heatmap Grid */
+        .heatmap-container {
+            overflow-x: auto;
+        }
+        .heatmap-table th, .heatmap-table td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 12px;
+            font-weight: 600;
+        }
+        .heatmap-cell {
+            border-radius: 6px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Print Styling */
         @media print {
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
             body { background: white; }
+            .parallax-sec { padding: 30px 0; color: black; text-shadow: none; }
+            .parallax-overlay { display: none; }
+            .stat-number { color: #1b4332; }
+            .custom-card { box-shadow: none; border: 1px solid #ccc; }
         }
     </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 bg-emerald-900 text-white shadow-lg border-b border-emerald-700">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 rounded-full bg-emerald-800 border-2 border-emerald-400 flex items-center justify-center text-emerald-300 shadow">
-                    <i class="fa-solid me-0 fa-leaf text-2xl text-emerald-300"></i>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top no-print">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fa-solid fa-leaf text-warning me-2"></i>SIM-AKREDITASI EKOTEOLOGI
+            </a>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#parallax-1">BAN-PT</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#parallax-2">LAMDIK</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#parallax-3">LAMEMBA</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#alert-section">Alert System</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#heatmap-section">Heatmap</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#dataset-section">Dataset</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#admin-section">Ruang Admin</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO BANNER HASIL AI GENERATED ILUSTRASI EKOTEOLOGI ISLAM -->
+    <header class="hero-banner text-center">
+        <div class="container">
+            <div class="d-flex justify-content-center align-items-center gap-4 mb-3 flex-wrap">
+                <!-- AI Generated Vector Illustration - Mahasiswa Putra Songkok -->
+                <div class="text-center">
+                    <svg class="avatar-illustration" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="#eef7f2"/>
+                        <!-- Songkok Hitam -->
+                        <rect x="30" y="20" width="40" height="22" rx="3" fill="#1a1a1a"/>
+                        <path d="M 30 35 Q 50 38 70 35 L 70 42 L 30 42 Z" fill="#111"/>
+                        <!-- Wajah & Baju Koko Hijau -->
+                        <circle cx="50" cy="48" r="16" fill="#f5c29b"/>
+                        <path d="M 25 85 C 25 65, 75 65, 75 85 Z" fill="#2d6a4f"/>
+                        <rect x="47" y="64" width="6" height="20" fill="#d4af37"/>
+                        <!-- Daun Ekoteologi -->
+                        <path d="M 70 25 Q 80 15 85 25 Q 75 35 70 25 Z" fill="#28a745"/>
+                    </svg>
+                    <div class="small fw-bold mt-1 text-warning">Mahasiswa Putra</div>
                 </div>
-                <div>
-                    <h1 class="font-extrabold text-xl tracking-tight text-emerald-100">SIM-AKREDITASI EKOTEOLOGI</h1>
-                    <p class="text-xs text-emerald-300 font-medium">Lembaga Penjaminan Mutu Kampus Islam Berkelanjutan</p>
+
+                <div class="mx-2">
+                    <h1 class="fw-extrabold display-5 mb-2 text-white">Sistem Akreditasi Kampus Ekoteologi Islam</h1>
+                    <p class="lead text-light mb-0">Integrasi Nilai Islam, Kelestarian Lingkungan & Penjaminan Mutu Perguruan Tinggi</p>
+                </div>
+
+                <!-- AI Generated Vector Illustration - Mahasiswi Jilbab Putri -->
+                <div class="text-center">
+                    <svg class="avatar-illustration" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="48" fill="#eef7f2"/>
+                        <!-- Jilbab Hijau Syar'i -->
+                        <path d="M 25 45 C 25 20, 75 20, 75 45 C 75 75, 80 82, 80 85 L 20 85 C 20 82, 25 75, 25 45 Z" fill="#2d6a4f"/>
+                        <!-- Wajah Putri -->
+                        <ellipse cx="50" cy="46" rx="13" ry="15" fill="#f8d3b0"/>
+                        <!-- Inner Hijau Muda -->
+                        <path d="M 37 36 C 45 32, 55 32, 63 36 C 60 33, 40 33, 37 36 Z" fill="#d4af37"/>
+                        <!-- Busana Busana Muslimah -->
+                        <path d="M 22 85 C 22 72, 78 72, 78 85 Z" fill="#1b4332"/>
+                        <!-- Simbol Ekoteologi Daun -->
+                        <path d="M 15 25 Q 25 15 30 25 Q 20 35 15 25 Z" fill="#28a745"/>
+                    </svg>
+                    <div class="small fw-bold mt-1 text-warning">Mahasiswi Putri</div>
                 </div>
             </div>
-            <nav class="hidden md:flex space-x-6 text-sm font-semibold text-emerald-200">
-                <a href="#dashboard" class="hover:text-white transition">Dashboard & Alert</a>
-                <a href="#heatmap" class="hover:text-white transition">Heatmap Status</a>
-                <a href="#dataset" class="hover:text-white transition">Dataset Akreditasi</a>
-                <a href="#parallax-sec" class="hover:text-white transition">Lembaga Akreditasi</a>
-                <a href="#admin" class="hover:text-white transition">Ruang Admin</a>
-            </nav>
-            <div class="flex items-center space-x-3">
-                <span class="text-xs bg-emerald-800 text-emerald-200 px-3 py-1.5 rounded-full border border-emerald-600">
-                    <i class="fa-solid fa-user-shield mr-1"></i> Admin Mutu
-                </span>
+            
+            <div class="mt-3">
+                <span class="badge bg-warning text-dark me-2"><i class="fa-solid fa-shield-halal me-1"></i> Berkelanjutan</span>
+                <span class="badge bg-success me-2"><i class="fa-solid fa-seedling me-1"></i> Eko-Kampus</span>
+                <span class="badge bg-light text-dark"><i class="fa-solid fa-graduation-cap me-1"></i> Standar BAN-PT & LAM</span>
             </div>
         </div>
     </header>
 
-    <!-- Banner Hero & Kampus Ekoteologi Islam -->
-    <section class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-900 text-white py-12 px-4 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
-            <div class="md:col-span-7 space-y-4">
-                <div class="inline-flex items-center space-x-2 bg-emerald-800/80 text-emerald-300 text-xs px-3 py-1 rounded-full border border-emerald-500">
-                    <i class="fa-solid fa-mosque"></i>
-                    <span>Integrasi Nilai Islam & Kelestarian Ekologi</span>
+    <!-- MAIN CONTAINER -->
+    <div id="pdf-report-content" class="pb-5">
+
+        <!-- PARALLAX 1: NUMERIK PRODI TERAKREDITASI BAN-PT -->
+        <section id="parallax-1" class="parallax-sec">
+            <div class="parallax-overlay"></div>
+            <div class="container parallax-content">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-8">
+                        <h2 class="fw-bold text-warning mb-1"><i class="fa-solid fa-university me-2"></i>Parallax 1: Capaian Akreditasi BAN-PT</h2>
+                        <p class="text-light mb-0">Statistik Numerik Ketercapaian Status Akreditasi Institusi & Program Studi Badan Akreditasi Nasional</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="badge bg-success fs-6"><i class="fa-solid fa-check-circle me-1"></i> Data Terverifikasi</span>
+                    </div>
                 </div>
-                <h2 class="text-3xl sm:text-4xl font-extrabold leading-tight text-emerald-50">
-                    Sistem Pengawasan & Penjaminan Mutu Akreditasi Program Studi
-                </h2>
-                <p class="text-emerald-200 text-sm leading-relaxed">
-                    Mewujudkan tata kelola akademis unggul, lestari, dan amanah berlandaskan nilai-nilai ekoteologi Islam. Memantau siklus akreditasi BAN-PT, LAMDIK, dan LAMEMBA secara real-time.
-                </p>
-                <div class="flex flex-wrap gap-4 pt-2">
-                    <a href="#dataset" class="bg-emerald-500 hover:bg-emerald-600 text-emerald-950 font-bold text-xs px-5 py-3 rounded-lg shadow transition flex items-center">
-                        <i class="fa-solid fa-table mr-2"></i> Lihat Dataset Akreditasi
-                    </a>
-                    <a href="#admin" class="bg-emerald-800/90 hover:bg-emerald-700 text-white font-medium text-xs px-5 py-3 rounded-lg border border-emerald-600 transition flex items-center">
-                        <i class="fa-solid fa-sliders mr-2"></i> Pengaturan Admin
-                    </a>
+                <div class="row g-4 text-center">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number">18</div>
+                            <div class="fw-semibold text-white">Total Prodi BAN-PT</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-success">8</div>
+                            <div class="fw-semibold text-white">Terakreditasi Unggul</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-info">7</div>
+                            <div class="fw-semibold text-white">Baik Sekali</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-warning">3</div>
+                            <div class="fw-semibold text-white">Baik / B</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <!-- Illustration: Muslim Mahasiswa & Mahasiswi Ekoteologi -->
-            <div class="md:col-span-5 flex justify-center">
-                <div class="bg-emerald-800/40 p-4 rounded-2xl border border-emerald-500/30 shadow-2xl backdrop-blur-sm max-w-sm">
-                    <svg viewBox="0 0 400 300" class="w-full h-auto rounded-xl">
-                        <defs>
-                            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#064E3B" />
-                                <stop offset="100%" stop-color="#047857" />
-                            </linearGradient>
-                        </defs>
-                        <rect width="400" height="300" rx="15" fill="url(#bgGrad)"/>
-                        <!-- Islamic Arch Motif -->
-                        <path d="M 100 300 L 100 120 Q 200 40 300 120 L 300 300 Z" fill="#065F46" opacity="0.5"/>
-                        <!-- Green Trees / Eco Theology symbol -->
-                        <circle cx="80" cy="220" r="45" fill="#10B981" opacity="0.6"/>
-                        <circle cx="320" cy="220" r="45" fill="#059669" opacity="0.6"/>
-                        <path d="M 200 280 L 200 190" stroke="#047857" stroke-width="6" stroke-linecap="round"/>
-                        <circle cx="200" cy="180" r="35" fill="#34D399" opacity="0.8"/>
+        </section>
+
+        <!-- PARALLAX 2: NUMERIK PRODI TERAKREDITASI LAMDIK -->
+        <section id="parallax-2" class="parallax-sec">
+            <div class="parallax-overlay"></div>
+            <div class="container parallax-content">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-8">
+                        <h2 class="fw-bold text-warning mb-1"><i class="fa-solid fa-book-quran me-2"></i>Parallax 2: Capaian Akreditasi LAMDIK</h2>
+                        <p class="text-light mb-0">Statistik Numerik Lembaga Akreditasi Mandiri Kependidikan (Fakultas Tarbiyah & Keguruan)</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="badge bg-primary fs-6"><i class="fa-solid fa-award me-1"></i> Kependidikan Islam</span>
+                    </div>
+                </div>
+                <div class="row g-4 text-center">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="fw-semibold text-white">Total Prodi LAMDIK</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-success">6</div>
+                            <div class="fw-semibold text-white">Terakreditasi Unggul</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-info">4</div>
+                            <div class="fw-semibold text-white">Baik Sekali</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-warning">2</div>
+                            <div class="fw-semibold text-white">Dalam Proses Re-akreditasi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PARALLAX 3: NUMERIK PRODI TERAKREDITASI LAMEMBA -->
+        <section id="parallax-3" class="parallax-sec">
+            <div class="parallax-overlay"></div>
+            <div class="container parallax-content">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-8">
+                        <h2 class="fw-bold text-warning mb-1"><i class="fa-solid fa-chart-line me-2"></i>Parallax 3: Capaian Akreditasi LAMEMBA</h2>
+                        <p class="text-light mb-0">Statistik Numerik Lembaga Akreditasi Mandiri Ekonomi, Manajemen, Bisnis & Akuntansi Syariah</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <span class="badge bg-warning text-dark fs-6"><i class="fa-solid fa-coins me-1"></i> Ekonomi Syariah</span>
+                    </div>
+                </div>
+                <div class="row g-4 text-center">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number">10</div>
+                            <div class="fw-semibold text-white">Total Prodi LAMEMBA</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-success">5</div>
+                            <div class="fw-semibold text-white">Terakreditasi Unggul</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-info">3</div>
+                            <div class="fw-semibold text-white">Baik Sekali</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="stat-number text-secondary">2</div>
+                            <div class="fw-semibold text-white">Prodi Baru / Izin Operasional</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="container my-5">
+
+            <!-- KRITERIA STATUS INFO BOX -->
+            <div class="alert alert-light border shadow-sm mb-4">
+                <h5 class="fw-bold text-success mb-2"><i class="fa-solid fa-circle-info me-2"></i>Ketentuan Kriteria Status Akreditasi:</h5>
+                <div class="row g-2 text-center">
+                    <div class="col-md-3 col-6">
+                        <div class="p-2 badge-kritis rounded text-white fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Kritis (&lt; 1 Tahun)</div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-2 badge-waspada rounded fw-bold"><i class="fa-solid fa-clock me-1"></i> Waspada (1 - 2 Tahun)</div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-2 badge-aman rounded text-white fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Aman (&gt; 2 Tahun)</div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-2 badge-baru rounded text-white fw-bold"><i class="fa-solid fa-plus-circle me-1"></i> Baru (Prodi/Izin Baru)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALERT SYSTEM KHUSUS -->
+            <section id="alert-section" class="mb-5">
+                <div class="custom-card">
+                    <div class="custom-card-header d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid fa-bell me-2 text-danger"></i>Alert System Khusus Masa Kadaluarsa</span>
+                        <span class="badge bg-danger">Peringatan Otomatis</span>
+                    </div>
+                    <div class="card-body p-4" id="alert-system-container">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- HEATMAP PROGRAM STUDI VS KRITERIA STATUS -->
+            <section id="heatmap-section" class="mb-5">
+                <div class="custom-card">
+                    <div class="custom-card-header">
+                        <i class="fa-solid fa-th me-2 text-primary"></i>Heatmap Program Studi vs Kriteria Status
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-muted small mb-3">Visualisasi persebaran status masa berlaku akreditasi berdasarkan Fakultas / Kelompok Program Studi.</p>
                         
-                        <!-- Mahasiswa Putra dengan Songkok -->
-                        <g transform="translate(110, 110)">
-                            <!-- Songkok -->
-                            <rect x="25" y="15" width="30" height="20" rx="2" fill="#111827"/>
-                            <!-- Face -->
-                            <circle cx="40" cy="45" r="15" fill="#FCD34D"/>
-                            <!-- Body / Almamater Hijau -->
-                            <path d="M 15 90 C 15 65, 65 65, 65 90 Z" fill="#047857"/>
-                            <path d="M 35 65 L 40 80 L 45 65 Z" fill="#FFFFFF"/>
-                            <!-- Buku / Dokumentasi -->
-                            <rect x="25" y="72" width="30" height="18" rx="2" fill="#0284C7"/>
-                        </g>
+                        <div class="heatmap-container mb-4">
+                            <table class="table table-bordered heatmap-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Fakultas / Kelompok</th>
+                                        <th class="badge-kritis text-white">Kritis (&lt;1th)</th>
+                                        <th class="badge-waspada text-dark">Waspada (1-2th)</th>
+                                        <th class="badge-aman text-white">Aman (&gt;2th)</th>
+                                        <th class="badge-baru text-white">Baru</th>
+                                        <th>Total Prodi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="heatmap-grid-body">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <!-- Mahasiswi Putri dengan Jilbab -->
-                        <g transform="translate(210, 110)">
-                            <!-- Jilbab Syar'i Putih/Hijau Muda -->
-                            <path d="M 20 25 C 20 10, 60 10, 60 25 C 65 50, 70 85, 40 85 C 10 85, 15 50, 20 25 Z" fill="#ECFDF5"/>
-                            <!-- Face -->
-                            <circle cx="40" cy="42" r="13" fill="#FCD34D"/>
-                            <!-- Inner Hijau / Abaya -->
-                            <path d="M 15 88 C 15 70, 65 70, 65 88 Z" fill="#065F46"/>
-                            <!-- Eco Plant in Hand -->
-                            <path d="M 40 80 Q 45 70 50 65 Q 55 70 40 80 Z" fill="#10B981"/>
-                        </g>
-
-                        <!-- Text Badge -->
-                        <rect x="90" y="250" width="220" height="32" rx="16" fill="#022C22" opacity="0.9"/>
-                        <text x="200" y="271" text-anchor="middle" fill="#A7F3D0" font-size="12" font-weight="bold">Mahasiswa Ekoteologi Islam</text>
-                    </svg>
+                        <!-- Heatmap Chart.js Visual -->
+                        <div style="height: 320px;">
+                            <canvas id="heatmapBarChart"></canvas>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
+
+            <!-- TABEL INTERAKTIF DATASET AKREDITASI -->
+            <section id="dataset-section" class="mb-4">
+                <div class="custom-card">
+                    <div class="custom-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <span><i class="fa-solid fa-table me-2 text-success"></i>Tabel Interaktif Dataset Akreditasi</span>
+                        <span class="badge bg-secondary">Disortir Otomatis: Kritis &rarr; Waspada &rarr; Aman &rarr; Baru</span>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <!-- Filter & Search -->
+                        <div class="row g-3 mb-3 no-print">
+                            <div class="col-md-6">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Cari Nama Prodi, Lembaga, atau Status...">
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <span class="text-muted me-2 small">Filter Status:</span>
+                                <select id="filterStatus" class="form-select d-inline-block w-auto">
+                                    <option value="ALL">Semua Status</option>
+                                    <option value="Kritis">Kritis (&lt;1th)</option>
+                                    <option value="Waspada">Waspada (1-2th)</option>
+                                    <option value="Aman">Aman (&gt;2th)</option>
+                                    <option value="Baru">Baru</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Program Studi</th>
+                                        <th>Lembaga Akreditasi</th>
+                                        <th>Peringkat</th>
+                                        <th>Sisa Masa Berlaku</th>
+                                        <th class="text-center">Kriteria Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="datasetTableBody">
+                                    <!-- Populated and sorted by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- TOMBOL GENERATE LAPORAN PDF (Di bawah tabel Dataset Akreditasi) -->
+                        <div class="mt-4 pt-3 border-top text-center no-print">
+                            <button id="btnGeneratePDF" onclick="generatePDFReport()" class="btn btn-success btn-lg px-4 fw-bold shadow">
+                                <i class="fa-solid fa-file-pdf me-2"></i>Generate Laporan PDF (Visualisasi & Tabel)
+                            </button>
+                            <p class="text-muted small mt-2">Menghasilkan dokumen PDF resmi yang merangkum seluruh visualisasi, heatmap, dan tabel dataset.</p>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- RUANG ADMIN DENGAN FITUR SORT -->
+            <section id="admin-section" class="mb-5 no-print">
+                <div class="custom-card border-warning">
+                    <div class="custom-card-header bg-warning bg-opacity-10 d-flex justify-content-between align-items-center">
+                        <span class="text-dark"><i class="fa-solid fa-user-shield me-2 text-warning"></i>Ruang Admin & Manajemen Dataset</span>
+                        <span class="badge bg-dark">Akses Administrator</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <h6 class="fw-bold mb-0">Fitur Kelola & Pengurutan Data (Sorting Custom)</h6>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="adminSortData('prodi')"><i class="fa-solid fa-sort-alpha-down me-1"></i>Sort Prodi (A-Z)</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="adminSortData('sisaMasa')"><i class="fa-solid fa-hourglass-half me-1"></i>Sort Masa Berlaku</button>
+                                <button class="btn btn-sm btn-outline-success" onclick="adminSortData('lembaga')"><i class="fa-solid fa-building-columns me-1"></i>Sort Lembaga</button>
+                                <button class="btn btn-sm btn-dark" onclick="resetDefaultSort()"><i class="fa-solid fa-rotate-left me-1"></i>Reset Sort Standar</button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped border align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nama Program Studi</th>
+                                        <th>Lembaga</th>
+                                        <th>Tanggal Kadaluarsa</th>
+                                        <th>Sisa (Tahun)</th>
+                                        <th>Kriteria Status</th>
+                                        <th>Aksi Admin</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminTableBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </div>
-    </section>
+    </div>
 
-    <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12" id="dashboard">
-
-        <!-- Stat Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <!-- Kritis -->
-            <div class="p-5 rounded-2xl border status-kritis shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-red-700">Status Kritis (&lt; 1 Thn)</span>
-                        <span class="w-8 h-8 rounded-full badge-kritis flex items-center justify-center text-xs font-bold shadow">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </span>
-                    </div>
-                    <div class="text-3xl font-black text-red-900" id="stat-kritis-count">2</div>
-                    <p class="text-xs text-red-700 mt-1">Masa berlaku akreditasi &lt; 12 bulan. Tindakan mendesak diperlukan!</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-red-200 text-xs font-semibold text-red-800 flex justify-between">
-                    <span>Prioritas Pengajuan</span>
-                    <span class="font-bold">Segera!</span>
-                </div>
-            </div>
-
-            <!-- Waspada -->
-            <div class="p-5 rounded-2xl border status-waspada shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Status Waspada (1-2 Thn)</span>
-                        <span class="w-8 h-8 rounded-full badge-waspada flex items-center justify-center text-xs font-bold shadow">
-                            <i class="fa-solid fa-clock"></i>
-                        </span>
-                    </div>
-                    <div class="text-3xl font-black text-amber-900" id="stat-waspada-count">3</div>
-                    <p class="text-xs text-amber-800 mt-1">Sisa masa berlaku 1–2 tahun. Penyusunan Borang / LED dimulakan.</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-amber-200 text-xs font-semibold text-amber-800 flex justify-between">
-                    <span>Persiapan Borang</span>
-                    <span class="font-bold">Tahap Awal</span>
-                </div>
-            </div>
-
-            <!-- Aman -->
-            <div class="p-5 rounded-2xl border status-aman shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Status Aman (&gt; 2 Thn)</span>
-                        <span class="w-8 h-8 rounded-full badge-aman flex items-center justify-center text-xs font-bold shadow">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </span>
-                    </div>
-                    <div class="text-3xl font-black text-emerald-900" id="stat-aman-count">5</div>
-                    <p class="text-xs text-emerald-700 mt-1">Sisa masa berlaku &gt; 2 tahun. Penjaminan mutu internal rutin.</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-emerald-200 text-xs font-semibold text-emerald-800 flex justify-between">
-                    <span>Siklus Re-Akreditasi</span>
-                    <span class="font-bold">Aman</span>
-                </div>
-            </div>
-
-            <!-- Baru -->
-            <div class="p-5 rounded-2xl border status-baru shadow-sm relative overflow-hidden flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs font-bold uppercase tracking-wider text-gray-700">Status Baru</span>
-                        <span class="w-8 h-8 rounded-full badge-baru flex items-center justify-center text-xs font-bold shadow">
-                            <i class="fa-solid fa-plus-circle"></i>
-                        </span>
-                    </div>
-                    <div class="text-3xl font-black text-gray-800" id="stat-baru-count">2</div>
-                    <p class="text-xs text-gray-600 mt-1">Prodi baru izin operasional / belum memiliki siklus akreditasi penuh.</p>
-                </div>
-                <div class="mt-4 pt-2 border-t border-gray-300 text-xs font-semibold text-gray-700 flex justify-between">
-                    <span>Pengajuan Akreditasi Minimal</span>
-                    <span class="font-bold">Proses</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ALERT SYSTEM KHUSUS -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-4">
-            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-bell"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-lg">Alert System Khusus Akreditasi</h3>
-                        <p class="text-xs text-gray-500">Peringatan otomatis berdasarkan kriteria masa berlaku akreditasi prodi</p>
-                    </div>
-                </div>
-                <span class="text-xs font-medium bg-red-50 text-red-700 px-3 py-1 rounded-full border border-red-200">
-                    <i class="fa-solid fa-bolt mr-1"></i> Notifikasi Aktif
-                </span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="alert-system-container">
-                <!-- Dynamic Alert Cards will be rendered here via JS -->
-            </div>
-        </section>
-
-        <!-- HEATMAP SECTION -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="heatmap">
-            <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-100 pb-4 gap-2">
-                <div>
-                    <h3 class="font-bold text-gray-800 text-lg flex items-center">
-                        <i class="fa-solid fa-fire text-amber-500 mr-2"></i> Heatmap Program Studi vs Kriteria Status
-                    </h3>
-                    <p class="text-xs text-gray-500">Visualisasi matriks distribusi Program Studi terhadap Kriteria Status Masa Berlaku Akreditasi</p>
-                </div>
-                <div class="flex items-center space-x-2 text-xs">
-                    <span class="inline-block w-3 h-3 bg-red-600 rounded"></span><span class="text-gray-600">Kritis</span>
-                    <span class="inline-block w-3 h-3 bg-amber-500 rounded ml-2"></span><span class="text-gray-600">Waspada</span>
-                    <span class="inline-block w-3 h-3 bg-emerald-600 rounded ml-2"></span><span class="text-gray-600">Aman</span>
-                    <span class="inline-block w-3 h-3 bg-gray-400 rounded ml-2"></span><span class="text-gray-600">Baru</span>
-                </div>
-            </div>
-
-            <!-- Heatmap Container Grid / Canvas -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <div class="lg:col-span-8 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
-                    <canvas id="heatmapChart" class="w-full max-h-80"></canvas>
-                </div>
-                <div class="lg:col-span-4 space-y-3 bg-emerald-900 text-white p-5 rounded-xl shadow">
-                    <h4 class="font-bold text-emerald-200 text-sm uppercase tracking-wider">
-                        <i class="fa-solid fa-circle-info mr-1"></i> Ringkasan Analisis Heatmap
-                    </h4>
-                    <p class="text-xs text-emerald-100 leading-relaxed">
-                        Visualisasi heatmap membantu Tim Penjaminan Mutu melihat secara instan Program Studi mana yang memerlukan intervensi pendampingan re-akreditasi mendesak.
-                    </p>
-                    <div class="p-3 bg-emerald-800/80 rounded-lg border border-emerald-700 text-xs space-y-1.5">
-                        <div class="flex justify-between">
-                            <span class="text-emerald-300">Total Prodi Dipantau:</span>
-                            <span class="font-bold text-white">12 Prodi</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-emerald-300">Dominasi Status:</span>
-                            <span class="font-bold text-emerald-300">Aman (41.7%)</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-emerald-300">Lembaga Terbanyak:</span>
-                            <span class="font-bold text-white">LAMDIK (5 Prodi)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PARALLAX SECTION NUMERIK (BAN-PT, LAMDIK, LAMEMBA) -->
-        <section class="space-y-6" id="parallax-sec">
-            <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                <i class="fa-solid fa-award text-emerald-600 mr-2"></i> Stat Numerik Lembaga Akreditasi
-            </h3>
-
-            <!-- Parallax 1: BAN-PT -->
-            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(6, 78, 59, 0.85), rgba(4, 120, 87, 0.9)), url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=1200&q=80');">
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-8 space-y-2">
-                        <span class="bg-emerald-700/80 text-emerald-200 text-xs px-3 py-1 rounded-full border border-emerald-500 uppercase font-bold tracking-wider">Parallax 1</span>
-                        <h4 class="text-2xl font-black text-white">Badan Akreditasi Nasional Perguruan Tinggi (BAN-PT)</h4>
-                        <p class="text-xs text-emerald-100 max-w-xl">
-                            Akreditasi institusi dan program studi sains murni, humaniora, dan magister/doktor interdisipliner berwawasan ekoteologi Islam.
-                        </p>
-                    </div>
-                    <div class="md:col-span-4 text-center md:text-right bg-emerald-950/60 p-5 rounded-xl border border-emerald-500/40 backdrop-blur-md">
-                        <div class="text-xs text-emerald-300 font-medium">Prodi Terakreditasi BAN-PT</div>
-                        <div class="text-5xl font-black text-emerald-300 my-1">4</div>
-                        <div class="text-xs text-emerald-200">3 Unggul / Baik Sekali | 1 Kritis</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Parallax 2: LAMDIK -->
-            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.85)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80');">
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-8 space-y-2">
-                        <span class="bg-blue-800/80 text-blue-200 text-xs px-3 py-1 rounded-full border border-blue-500 uppercase font-bold tracking-wider">Parallax 2</span>
-                        <h4 class="text-2xl font-black text-white">Lembaga Akreditasi Mandiri Kependidikan (LAMDIK)</h4>
-                        <p class="text-xs text-blue-100 max-w-xl">
-                            Akreditasi kependidikan Islam mencakup Pendidikan Agama Islam, Pendidikan Bahasa Arab, dan Tadris IPA Ekologi.
-                        </p>
-                    </div>
-                    <div class="md:col-span-4 text-center md:text-right bg-slate-950/60 p-5 rounded-xl border border-blue-500/40 backdrop-blur-md">
-                        <div class="text-xs text-blue-300 font-medium">Prodi Terakreditasi LAMDIK</div>
-                        <div class="text-5xl font-black text-blue-300 my-1">5</div>
-                        <div class="text-xs text-blue-200">2 Unggul | 2 Baik Sekali | 1 Baru</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Parallax 3: LAMEMBA -->
-            <div class="parallax rounded-2xl p-8 text-white relative overflow-hidden shadow-xl" style="background-image: linear-gradient(rgba(120, 53, 15, 0.85), rgba(180, 83, 9, 0.85)), url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80');">
-                <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <div class="md:col-span-8 space-y-2">
-                        <span class="bg-amber-800/80 text-amber-200 text-xs px-3 py-1 rounded-full border border-amber-500 uppercase font-bold tracking-wider">Parallax 3</span>
-                        <h4 class="text-2xl font-black text-white">Lembaga Akreditasi Mandiri Ekonomi, Manajemen, Bisnis dan Akuntansi (LAMEMBA)</h4>
-                        <p class="text-xs text-amber-100 max-w-xl">
-                            Akreditasi rumpun Ekonomi Syariah, Perbankan Syariah, dan Manajemen Lingkungan Islam.
-                        </p>
-                    </div>
-                    <div class="md:col-span-4 text-center md:text-right bg-amber-950/60 p-5 rounded-xl border border-amber-500/40 backdrop-blur-md">
-                        <div class="text-xs text-amber-300 font-medium">Prodi Terakreditasi LAMEMBA</div>
-                        <div class="text-5xl font-black text-amber-300 my-1">3</div>
-                        <div class="text-xs text-amber-200">1 Unggul | 1 Kritis | 1 Baru</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TABEL INTERAKTIF DATASET AKREDITASI -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="dataset">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
-                <div>
-                    <h3 class="font-bold text-gray-800 text-lg flex items-center">
-                        <i class="fa-solid fa-table-list text-emerald-600 mr-2"></i> Tabel Interaktif Dataset Akreditasi
-                    </h3>
-                    <p class="text-xs text-gray-500">Data otomatis terurut hirarki status: <span class="font-bold text-red-600">Kritis</span> &rarr; <span class="font-bold text-amber-600">Waspada</span> &rarr; <span class="font-bold text-emerald-600">Aman</span> &rarr; <span class="font-bold text-gray-600">Baru</span></p>
-                </div>
-                <!-- Filter controls -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Cari Prodi / Lembaga..." class="px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 w-48">
-                    <select id="filterStatus" onchange="renderTable()" class="px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="ALL">Semua Status</option>
-                        <option value="Kritis">Kritis (<1th)</option>
-                        <option value="Waspada">Waspada (1-2th)</option>
-                        <option value="Aman">Aman (>2th)</option>
-                        <option value="Baru">Baru</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Table Wrapper -->
-            <div class="overflow-x-auto rounded-xl border border-gray-200">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-emerald-900 text-emerald-100 uppercase tracking-wider text-[11px]">
-                            <th class="p-3 font-semibold">No</th>
-                            <th class="p-3 font-semibold">Program Studi</th>
-                            <th class="p-3 font-semibold">Jenjang</th>
-                            <th class="p-3 font-semibold">Lembaga</th>
-                            <th class="p-3 font-semibold">Peringkat</th>
-                            <th class="p-3 font-semibold">Tgl Kadaluarsa</th>
-                            <th class="p-3 font-semibold">Sisa Masa Berlaku</th>
-                            <th class="p-3 font-semibold">Kriteria Status</th>
-                            <th class="p-3 font-semibold text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="datasetTableBody" class="divide-y divide-gray-200 font-medium">
-                        <!-- Dynamic Rows rendered via JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Action Button: GENERATE LAPORAN PDF -->
-            <div class="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-100 gap-4">
-                <div class="text-xs text-gray-500">
-                    <i class="fa-solid fa-info-circle mr-1 text-emerald-600"></i> Menampilkan total <span id="table-count-info" class="font-bold text-gray-800">12</span> data program studi.
-                </div>
-                <button onclick="generatePDFReport()" class="bg-gradient-to-r from-red-600 to-emerald-700 hover:from-red-700 hover:to-emerald-800 text-white font-bold text-xs px-6 py-3 rounded-xl shadow-md transition flex items-center space-x-2">
-                    <i class="fa-solid fa-file-pdf text-base"></i>
-                    <span>Generate Laporan PDF (Visualisasi & Tabel)</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- RUANG ADMIN & FITUR SORT -->
-        <section class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 space-y-6" id="admin">
-            <div class="flex items-center justify-between border-b border-gray-100 pb-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-user-gear"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-lg">Ruang Admin Penjaminan Mutu</h3>
-                        <p class="text-xs text-gray-500">Kelola dataset, penataan data, dan konfigurasikan pengurutan (Sort)</p>
-                    </div>
-                </div>
-                <span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full border border-emerald-200">
-                    Panel Admin
-                </span>
-            </div>
-
-            <!-- Fitur Sort Khusus Ruang Admin -->
-            <div class="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4">
-                <h4 class="font-bold text-xs uppercase tracking-wider text-gray-700 flex items-center">
-                    <i class="fa-solid fa-arrow-down-short-wide text-emerald-600 mr-2"></i> Fitur Sort Multi-Kriteria (Admin Tool)
-                </h4>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs text-gray-600 mb-1 font-semibold">Urutkan Berdasarkan:</label>
-                        <select id="adminSortKey" class="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white">
-                            <option value="status_priority">Kriteria Status (Kritis &rarr; Waspada &rarr; Aman &rarr; Baru)</option>
-                            <option value="prodi">Nama Program Studi (A-Z)</option>
-                            <option value="lembaga">Lembaga Akreditasi (BAN-PT / LAMDIK / LAMEMBA)</option>
-                            <option value="sisa_bulan">Sisa Masa Berlaku (Bulan Terpendek &rarr; Terlama)</option>
-                            <option value="tgl_kadaluarsa">Tanggal Kadaluarsa</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-600 mb-1 font-semibold">Arah Pengurutan:</label>
-                        <select id="adminSortOrder" class="w-full text-xs px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white">
-                            <option value="asc">Ascending (A-Z / Terkecil)</option>
-                            <option value="desc">Descending (Z-A / Terbesar)</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="applyAdminSort()" class="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow transition flex items-center justify-center">
-                            <i class="fa-solid fa-filter mr-1.5"></i> Terapkan Pengurutan Admin
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Form Tambah Data Baru (Simulasi Admin) -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <div class="border border-emerald-100 p-5 rounded-xl bg-emerald-50/40 space-y-3">
-                    <h4 class="font-bold text-xs uppercase text-emerald-900 tracking-wider">
-                        <i class="fa-solid fa-square-plus mr-1"></i> Input / Re-Akreditasi Prodi Baru
-                    </h4>
-                    <form id="addProdiForm" onsubmit="handleAddProdi(event)" class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-semibold mb-1 text-gray-700">Nama Program Studi:</label>
-                            <input type="text" id="inputProdi" required placeholder="Contoh: Magister Ekologi Islam" class="w-full p-2 border border-gray-300 rounded bg-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-semibold mb-1 text-gray-700">Jenjang:</label>
-                                <select id="inputJenjang" class="w-full p-2 border border-gray-300 rounded bg-white">
-                                    <option>S1</option>
-                                    <option>S2</option>
-                                    <option>S3</option>
-                                    <option>D3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-semibold mb-1 text-gray-700">Lembaga:</label>
-                                <select id="inputLembaga" class="w-full p-2 border border-gray-300 rounded bg-white">
-                                    <option>BAN-PT</option>
-                                    <option>LAMDIK</option>
-                                    <option>LAMEMBA</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-semibold mb-1 text-gray-700">Peringkat:</label>
-                                <select id="inputPeringkat" class="w-full p-2 border border-gray-300 rounded bg-white">
-                                    <option>Unggul</option>
-                                    <option>Baik Sekali</option>
-                                    <option>Baik</option>
-                                    <option>Proses Baru</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-semibold mb-1 text-gray-700">Sisa Masa Berlaku (Bulan):</label>
-                                <input type="number" id="inputSisaBulan" placeholder="Contoh: 8 (Kritis) / 18 (Waspada) / 36 (Aman) / -1 (Baru)" class="w-full p-2 border border-gray-300 rounded bg-white">
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow transition">
-                            <i class="fa-solid fa-save mr-1"></i> Simpan Record Prodi
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Admin Status Log / Audit Trail -->
-                <div class="border border-gray-200 p-5 rounded-xl bg-white space-y-3">
-                    <h4 class="font-bold text-xs uppercase text-gray-700 tracking-wider">
-                        <i class="fa-solid fa-clock-rotate-left mr-1"></i> Catatan Perubahan &amp; Audit Log Mutu
-                    </h4>
-                    <div class="space-y-2 max-h-48 overflow-y-auto text-xs text-gray-600 pr-2" id="adminLogContainer">
-                        <div class="p-2 bg-gray-50 rounded border-l-2 border-emerald-500">
-                            <span class="font-bold text-gray-800">[13/08/2026]</span> Sistem diperbarui dengan Kriteria Status (Kritis, Waspada, Aman, Baru).
-                        </div>
-                        <div class="p-2 bg-gray-50 rounded border-l-2 border-amber-500">
-                            <span class="font-bold text-gray-800">[10/08/2026]</span> Verifikasi data re-akreditasi LAMDIK selesai.
-                        </div>
-                        <div class="p-2 bg-gray-50 rounded border-l-2 border-red-500">
-                            <span class="font-bold text-gray-800">[05/08/2026]</span> Alert dikirim ke Kaprodi S1 Hukum Ekonomi Syariah (Masa berlaku &lt; 1 thn).
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-emerald-950 text-emerald-300 py-8 border-t border-emerald-800 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs space-y-2">
-            <div class="flex justify-center items-center space-x-2">
-                <i class="fa-solid fa-mosque text-emerald-400"></i>
-                <span class="font-bold text-white">Sistem Akreditasi Ekoteologi Islam</span>
-            </div>
-            <p>&copy; 2026 Badan Penjaminan Mutu Akademik Kampus Islam Berkelanjutan. Seluruh Hak Cipta Dilindungi.</p>
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white py-4 text-center no-print border-top border-warning">
+        <div class="container">
+            <p class="mb-1 fw-bold text-warning"><i class="fa-solid fa-leaf me-2"></i>Kampus Ekoteologi Islam Berkelanjutan</p>
+            <p class="small text-white-50 mb-0">&copy; 2026 Sistem Informasi Akreditasi Terpadu BAN-PT, LAMDIK & LAMEMBA.</p>
         </div>
     </footer>
 
-    <!-- JavaScript Application Logic -->
+    <!-- JAVASCRIPT & LOGIC -->
     <script>
-        // DATASET PROGRAM STUDI INITIAL
-        let dataset = [
-            { id: 1, prodi: "S1 Hukum Ekonomi Syariah", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Baik Sekali", tgl_kadaluarsa: "2027-02-15", sisa_bulan: 6, status: "Kritis" },
-            { id: 2, prodi: "S1 Sains Data Lingkungan", jenjang: "S1", lembaga: "BAN-PT", peringkat: "Baik", tgl_kadaluarsa: "2027-04-10", sisa_bulan: 8, status: "Kritis" },
-            { id: 3, prodi: "S1 Pendidikan Agama Islam", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2027-11-20", sisa_bulan: 15, status: "Waspada" },
-            { id: 4, prodi: "S1 Perbankan Syariah", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Baik Sekali", tgl_kadaluarsa: "2028-01-05", sisa_bulan: 17, status: "Waspada" },
-            { id: 5, prodi: "S1 Tadris Biologi & Ekologi", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2028-04-30", sisa_bulan: 20, status: "Waspada" },
-            { id: 6, prodi: "S1 Pendidikan Bahasa Arab", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Unggul", tgl_kadaluarsa: "2029-08-12", sisa_bulan: 36, status: "Aman" },
-            { id: 7, prodi: "S2 Ekologi & Studi Islam", jenjang: "S2", lembaga: "BAN-PT", peringkat: "Unggul", tgl_kadaluarsa: "2029-10-18", sisa_bulan: 38, status: "Aman" },
-            { id: 8, prodi: "S1 Manajemen Lingkungan Islam", jenjang: "S1", lembaga: "LAMEMBA", peringkat: "Unggul", tgl_kadaluarsa: "2030-01-22", sisa_bulan: 41, status: "Aman" },
-            { id: 9, prodi: "S1 Manajemen Pendidikan Islam", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Baik Sekali", tgl_kadaluarsa: "2030-05-14", sisa_bulan: 45, status: "Aman" },
-            { id: 10, prodi: "S3 Studi Islam & Pembangunan", jenjang: "S3", lembaga: "BAN-PT", peringkat: "Baik Sekali", tgl_kadaluarsa: "2030-09-01", sisa_bulan: 49, status: "Aman" },
-            { id: 11, prodi: "S1 Bioteknologi Nabati Islam", jenjang: "S1", lembaga: "BAN-PT", peringkat: "Proses Baru", tgl_kadaluarsa: "-", sisa_bulan: 999, status: "Baru" },
-            { id: 12, prodi: "S1 Pendidikan Ekoperbankan", jenjang: "S1", lembaga: "LAMDIK", peringkat: "Proses Baru", tgl_kadaluarsa: "-", sisa_bulan: 999, status: "Baru" }
+        // DATASET UTAMA AKREDITASI
+        const masterDataset = [
+            { id: 101, prodi: "S1 Pendidikan Agama Islam", lembaga: "LAMDIK", fakultas: "Tarbiyah", peringkat: "Unggul", expDate: "2026-11-15", sisaMasa: 0.25, status: "Kritis" },
+            { id: 102, prodi: "S1 Ekonomi Syariah", lembaga: "LAMEMBA", fakultas: "FEBI", peringkat: "Baik Sekali", expDate: "2027-02-10", sisaMasa: 0.50, status: "Kritis" },
+            { id: 103, prodi: "S1 Hukum Keluarga Islam", lembaga: "BAN-PT", fakultas: "Syariah", peringkat: "B", expDate: "2027-05-20", sisaMasa: 0.75, status: "Kritis" },
+            { id: 104, prodi: "S1 Management Hajj & Umrah", lembaga: "LAMEMBA", fakultas: "FEBI", peringkat: "Baik Sekali", expDate: "2027-11-01", sisaMasa: 1.20, status: "Waspada" },
+            { id: 105, prodi: "S1 Pendidikan Bahasa Arab", lembaga: "LAMDIK", fakultas: "Tarbiyah", peringkat: "Unggul", expDate: "2028-03-15", sisaMasa: 1.55, status: "Waspada" },
+            { id: 106, prodi: "S1 Ilmu Al-Qur'an & Tafsir", lembaga: "BAN-PT", fakultas: "Ushuluddin", peringkat: "Unggul", expDate: "2028-06-30", sisaMasa: 1.85, status: "Waspada" },
+            { id: 107, prodi: "S1 Perbankan Syariah", lembaga: "LAMEMBA", fakultas: "FEBI", peringkat: "Unggul", expDate: "2029-08-20", sisaMasa: 3.00, status: "Aman" },
+            { id: 108, prodi: "S1 Akuntansi Syariah", lembaga: "LAMEMBA", fakultas: "FEBI", peringkat: "Unggul", expDate: "2030-01-10", sisaMasa: 3.40, status: "Aman" },
+            { id: 109, prodi: "S1 Pendidikan Guru MI", lembaga: "LAMDIK", fakultas: "Tarbiyah", peringkat: "Baik Sekali", expDate: "2029-12-05", sisaMasa: 3.30, status: "Aman" },
+            { id: 110, prodi: "S1 Ekologi & Lingkungan Islam", lembaga: "BAN-PT", fakultas: "Sains & Ekologi", peringkat: "Baru", expDate: "2031-01-01", sisaMasa: 4.50, status: "Baru" },
+            { id: 111, prodi: "S1 Bio-Teknologi Halal", lembaga: "BAN-PT", fakultas: "Sains & Ekologi", peringkat: "Baru", expDate: "2031-05-01", sisaMasa: 4.80, status: "Baru" }
         ];
 
-        // Priority Map for Sorting: Kritis (1) -> Waspada (2) -> Aman (3) -> Baru (4)
-        const priorityOrder = { "Kritis": 1, "Waspada": 2, "Aman": 3, "Baru": 4 };
+        // HIRARKI URUTAN STATUS: Kritis -> Waspada -> Aman -> Baru
+        const statusOrder = { "Kritis": 1, "Waspada": 2, "Aman": 3, "Baru": 4 };
 
-        // Helper function to calculate/verify status based on sisa_bulan
-        function getStatusCategory(sisa_bulan, currentStatus) {
-            if (currentStatus === "Baru" || sisa_bulan >= 900) return "Baru";
-            if (sisa_bulan < 12) return "Kritis";
-            if (sisa_bulan >= 12 && sisa_bulan <= 24) return "Waspada";
-            return "Aman";
+        // FUNGSI UTAMA UNTUK MENDAPATKAN BADGE HTML
+        function getStatusBadge(status) {
+            switch(status) {
+                case "Kritis": return `<span class="badge badge-kritis"><i class="fa-solid fa-triangle-exclamation me-1"></i>Kritis (&lt;1th)</span>`;
+                case "Waspada": return `<span class="badge badge-waspada"><i class="fa-solid fa-clock me-1"></i>Waspada (1-2th)</span>`;
+                case "Aman": return `<span class="badge badge-aman"><i class="fa-solid fa-check-circle me-1"></i>Aman (&gt;2th)</span>`;
+                case "Baru": return `<span class="badge badge-baru"><i class="fa-solid fa-plus-circle me-1"></i>Baru</span>`;
+                default: return `<span class="badge bg-secondary">${status}</span>`;
+            }
         }
 
-        // Sort Dataset Default (Kritis -> Waspada -> Aman -> Baru)
-        function sortDatasetByPriority(dataArr) {
-            return dataArr.sort((a, b) => {
-                let prioA = priorityOrder[a.status] || 99;
-                let prioB = priorityOrder[b.status] || 99;
-                if (prioA !== prioB) return prioA - prioB;
-                return a.sisa_bulan - b.sisa_bulan;
+        // RENDER DATASET TABLE (Pre-sorted: Kritis -> Waspada -> Aman -> Baru)
+        let currentDataset = [...masterDataset];
+
+        function sortByDefaultStatus(data) {
+            return data.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+        }
+
+        function renderDatasetTable(dataList) {
+            const tbody = document.getElementById("datasetTableBody");
+            tbody.innerHTML = "";
+
+            dataList.forEach((item, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td class="fw-bold text-muted">${index + 1}</td>
+                    <td class="fw-semibold text-dark">${item.prodi}</td>
+                    <td><span class="badge bg-outline-dark border text-dark">${item.lembaga}</span></td>
+                    <td>${item.peringkat}</td>
+                    <td><i class="fa-regular fa-calendar-alt me-1 text-muted"></i>${item.sisaMasa} Tahun (${item.expDate})</td>
+                    <td class="text-center">${getStatusBadge(item.status)}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
-        // Render Summary Stats
-        function updateSummaryStats() {
-            let kritis = dataset.filter(d => d.status === "Kritis").length;
-            let waspada = dataset.filter(d => d.status === "Waspada").length;
-            let aman = dataset.filter(d => d.status === "Aman").length;
-            let baru = dataset.filter(d => d.status === "Baru").length;
-
-            document.getElementById('stat-kritis-count').innerText = kritis;
-            document.getElementById('stat-waspada-count').innerText = waspada;
-            document.getElementById('stat-aman-count').innerText = aman;
-            document.getElementById('stat-baru-count').innerText = baru;
-        }
-
-        // Render Alert System Khusus
+        // RENDER ALERT SYSTEM KHUSUS
         function renderAlertSystem() {
-            const container = document.getElementById('alert-system-container');
+            const container = document.getElementById("alert-system-container");
             container.innerHTML = "";
 
-            // Alert items for Kritis & Waspada
-            let alertItems = dataset.filter(d => d.status === "Kritis" || d.status === "Waspada");
-            
-            alertItems.forEach(item => {
-                let badgeClass = item.status === "Kritis" ? "badge-kritis" : "badge-waspada";
-                let bgClass = item.status === "Kritis" ? "bg-red-50/80 border-red-200 text-red-900" : "bg-amber-50/80 border-amber-200 text-amber-900";
-                let icon = item.status === "Kritis" ? "fa-circle-exclamation text-red-600" : "fa-triangle-exclamation text-amber-600";
+            const sortedAlerts = [...masterDataset].sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+            sortedAlerts.forEach(item => {
+                let alertClass = item.status.toLowerCase();
+                let icon = item.status === 'Kritis' ? 'fa-triangle-exclamation text-danger' : 
+                           item.status === 'Waspada' ? 'fa-triangle-exclamation text-warning' : 
+                           item.status === 'Aman' ? 'fa-circle-check text-success' : 'fa-info-circle text-secondary';
                 
-                let cardHtml = `
-                    <div class="p-4 rounded-xl border ${bgClass} flex items-start space-x-3 shadow-sm">
-                        <i class="fa-solid ${icon} text-lg mt-0.5"></i>
-                        <div class="flex-1 space-y-1">
-                            <div class="flex items-center justify-between">
-                                <h4 class="font-bold text-xs">${item.prodi} (${item.jenjang})</h4>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${badgeClass}">${item.status.toUpperCase()}</span>
-                            </div>
-                            <p class="text-[11px] opacity-90">
-                                Lembaga: <span class="font-semibold">${item.lembaga}</span> | Sisa Masa Berlaku: <span class="font-bold">${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'Baru'}</span>
-                            </p>
-                            <div class="text-[10px] bg-white/70 px-2.5 py-1 rounded border border-gray-200 mt-2 font-medium">
-                                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>
-                                ${item.status === 'Kritis' ? 'Rekomendasi: Unggah SK Tim Borang & Ajukan LED ke ' + item.lembaga + ' segera!' : 'Rekomendasi: Lakukan evaluasi internal PDM & kumpulkan dokumen pendukung.'}
-                            </div>
+                const div = document.createElement("div");
+                div.className = `alert-item ${alertClass} d-flex justify-content-between align-items-center flex-wrap gap-2`;
+                div.innerHTML = `
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fa-solid ${icon} fs-4"></i>
+                        <div>
+                            <div class="fw-bold fs-6">${item.prodi} (${item.lembaga})</div>
+                            <div class="small text-muted">Masa Kadaluarsa: <strong>${item.expDate}</strong> &bull; Sisa Waktu: <strong>${item.sisaMasa} Tahun</strong></div>
                         </div>
                     </div>
+                    <div>${getStatusBadge(item.status)}</div>
                 `;
-                container.innerHTML += cardHtml;
+                container.appendChild(div);
             });
         }
 
-        // Render Dataset Table
-        function renderTable() {
-            const tbody = document.getElementById('datasetTableBody');
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const filterVal = document.getElementById('filterStatus').value;
+        // RENDER HEATMAP TABLE & CHART
+        function renderHeatmap() {
+            const fakultasMap = {};
 
-            let filtered = dataset.filter(item => {
-                let matchesSearch = item.prodi.toLowerCase().includes(searchVal) || item.lembaga.toLowerCase().includes(searchVal);
-                let matchesStatus = (filterVal === "ALL") || (item.status === filterVal);
-                return matchesSearch && matchesStatus;
+            masterDataset.forEach(item => {
+                if(!fakultasMap[item.fakultas]) {
+                    fakultasMap[item.fakultas] = { Kritis: 0, Waspada: 0, Aman: 0, Baru: 0, Total: 0 };
+                }
+                fakultasMap[item.fakultas][item.status]++;
+                fakultasMap[item.fakultas].Total++;
             });
 
+            const tbody = document.getElementById("heatmap-grid-body");
             tbody.innerHTML = "";
-            document.getElementById('table-count-info').innerText = filtered.length;
 
-            filtered.forEach((item, index) => {
-                let badgeClass = "";
-                if (item.status === "Kritis") badgeClass = "badge-kritis";
-                else if (item.status === "Waspada") badgeClass = "badge-waspada";
-                else if (item.status === "Aman") badgeClass = "badge-aman";
-                else badgeClass = "badge-baru";
+            const labels = [];
+            const dataKritis = [];
+            const dataWaspada = [];
+            const dataAman = [];
+            const dataBaru = [];
 
-                let tr = document.createElement('tr');
-                tr.className = "hover:bg-emerald-50/50 transition border-b border-gray-100";
+            for (let fak in fakultasMap) {
+                labels.push(fak);
+                dataKritis.push(fakultasMap[fak].Kritis);
+                dataWaspada.push(fakultasMap[fak].Waspada);
+                dataAman.push(fakultasMap[fak].Aman);
+                dataBaru.push(fakultasMap[fak].Baru);
+
+                const tr = document.createElement("tr");
                 tr.innerHTML = `
-                    <td class="p-3 font-bold text-gray-500">${index + 1}</td>
-                    <td class="p-3 font-bold text-gray-800">${item.prodi}</td>
-                    <td class="p-3"><span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded font-bold">${item.jenjang}</span></td>
-                    <td class="p-3 font-semibold text-emerald-800">${item.lembaga}</td>
-                    <td class="p-3">${item.peringkat}</td>
-                    <td class="p-3">${item.tgl_kadaluarsa}</td>
-                    <td class="p-3 font-bold">${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'N/A (Baru)'}</td>
-                    <td class="p-3">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${badgeClass}">
-                            ${item.status}
-                        </span>
-                    </td>
-                    <td class="p-3 text-center">
-                        <button onclick="viewProdiDetail(${item.id})" class="text-emerald-700 hover:text-emerald-900 bg-emerald-100 px-2 py-1 rounded text-[11px] font-bold">
-                            <i class="fa-solid fa-eye"></i> Detail
-                        </button>
+                    <td class="fw-bold text-start">${fak}</td>
+                    <td class="${fakultasMap[fak].Kritis > 0 ? 'bg-danger text-white' : 'text-muted'}">${fakultasMap[fak].Kritis}</td>
+                    <td class="${fakultasMap[fak].Waspada > 0 ? 'bg-warning text-dark' : 'text-muted'}">${fakultasMap[fak].Waspada}</td>
+                    <td class="${fakultasMap[fak].Aman > 0 ? 'bg-success text-white' : 'text-muted'}">${fakultasMap[fak].Aman}</td>
+                    <td class="${fakultasMap[fak].Baru > 0 ? 'bg-secondary text-white' : 'text-muted'}">${fakultasMap[fak].Baru}</td>
+                    <td class="fw-bold">${fakultasMap[fak].Total}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            // Chart.js Heatmap Stacked Representation
+            const ctx = document.getElementById('heatmapBarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Kritis (<1th)', data: dataKritis, backgroundColor: '#dc3545' },
+                        { label: 'Waspada (1-2th)', data: dataWaspada, backgroundColor: '#ffc107' },
+                        { label: 'Aman (>2th)', data: dataAman, backgroundColor: '#28a745' },
+                        { label: 'Baru', data: dataBaru, backgroundColor: '#6c757d' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { stacked: true, beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Visualisasi Heatmap Program Studi vs Kriteria Status' }
+                    }
+                }
+            });
+        }
+
+        // RENDER RUANG ADMIN WITH SORTING
+        function renderAdminTable(dataList) {
+            const tbody = document.getElementById("adminTableBody");
+            tbody.innerHTML = "";
+
+            dataList.forEach(item => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td class="fw-semibold">${item.prodi}</td>
+                    <td>${item.lembaga}</td>
+                    <td>${item.expDate}</td>
+                    <td>${item.sisaMasa} Th</td>
+                    <td>${getStatusBadge(item.status)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary me-1"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Fitur Admin Sort
-        function applyAdminSort() {
-            const key = document.getElementById('adminSortKey').value;
-            const order = document.getElementById('adminSortOrder').value;
-
-            dataset.sort((a, b) => {
-                let valA, valB;
-                if (key === "status_priority") {
-                    valA = priorityOrder[a.status] || 99;
-                    valB = priorityOrder[b.status] || 99;
-                } else if (key === "prodi") {
-                    valA = a.prodi.toLowerCase();
-                    valB = b.prodi.toLowerCase();
-                } else if (key === "lembaga") {
-                    valA = a.lembaga.toLowerCase();
-                    valB = b.lembaga.toLowerCase();
-                } else if (key === "sisa_bulan") {
-                    valA = a.sisa_bulan;
-                    valB = b.sisa_bulan;
-                } else if (key === "tgl_kadaluarsa") {
-                    valA = a.tgl_kadaluarsa;
-                    valB = b.tgl_kadaluarsa;
-                }
-
-                if (valA < valB) return order === 'asc' ? -1 : 1;
-                if (valA > valB) return order === 'asc' ? 1 : -1;
-                return 0;
-            });
-
-            renderTable();
-            renderAlertSystem();
-            updateHeatmapChart();
-
-            // Add Admin Log
-            const logContainer = document.getElementById('adminLogContainer');
-            let timeStr = new Date().toLocaleTimeString();
-            logContainer.innerHTML = `
-                <div class="p-2 bg-emerald-50 rounded border-l-2 border-emerald-600">
-                    <span class="font-bold text-emerald-900">[${timeStr}]</span> Admin melakukan sorting dataset berdasarkan '${key}' (${order.toUpperCase()}).
-                </div>
-            ` + logContainer.innerHTML;
-        }
-
-        // Add Prodi Form Handler
-        function handleAddProdi(e) {
-            e.preventDefault();
-            const prodi = document.getElementById('inputProdi').value;
-            const jenjang = document.getElementById('inputJenjang').value;
-            const lembaga = document.getElementById('inputLembaga').value;
-            const peringkat = document.getElementById('inputPeringkat').value;
-            let sisaBulan = parseInt(document.getElementById('inputSisaBulan').value);
-
-            if (isNaN(sisaBulan) || sisaBulan < 0) sisaBulan = 999;
-
-            let status = getStatusCategory(sisaBulan, sisaBulan === 999 ? "Baru" : "");
-
-            let newObj = {
-                id: dataset.length + 1,
-                prodi: prodi,
-                jenjang: jenjang,
-                lembaga: lembaga,
-                peringkat: peringkat,
-                tgl_kadaluarsa: sisaBulan === 999 ? "-" : "2028-12-31",
-                sisa_bulan: sisaBulan,
-                status: status
-            };
-
-            dataset.push(newObj);
-            dataset = sortDatasetByPriority(dataset);
-
-            updateSummaryStats();
-            renderTable();
-            renderAlertSystem();
-            updateHeatmapChart();
-
-            alert(`Program Studi '${prodi}' berhasil ditambahkan dengan Kriteria Status: ${status}`);
-            document.getElementById('addProdiForm').reset();
-        }
-
-        function viewProdiDetail(id) {
-            let item = dataset.find(d => d.id === id);
-            if (item) {
-                alert(`[DETAIL AKREDITASI]
-
-Program Studi: ${item.prodi}
-Jenjang: ${item.jenjang}
-Lembaga Akreditasi: ${item.lembaga}
-Peringkat: ${item.peringkat}
-Status Kriteria: ${item.status}
-Sisa Masa Berlaku: ${item.sisa_bulan < 900 ? item.sisa_bulan + ' Bulan' : 'Status Baru'}`);
+        function adminSortData(criteria) {
+            let sorted = [...masterDataset];
+            if(criteria === 'prodi') {
+                sorted.sort((a, b) => a.prodi.localeCompare(b.prodi));
+            } else if(criteria === 'sisaMasa') {
+                sorted.sort((a, b) => a.sisaMasa - b.sisaMasa);
+            } else if(criteria === 'lembaga') {
+                sorted.sort((a, b) => a.lembaga.localeCompare(b.lembaga));
             }
+            renderAdminTable(sorted);
         }
 
-        // HEATMAP CHART GENERATION (Program Studi / Lembaga vs Kriteria Status)
-        let heatmapChartInstance = null;
-
-        function updateHeatmapChart() {
-            const ctx = document.getElementById('heatmapChart').getContext('2d');
-            
-            // Aggregating counts by Lembaga vs Status
-            const lembagas = ['BAN-PT', 'LAMDIK', 'LAMEMBA'];
-            const statuses = ['Kritis', 'Waspada', 'Aman', 'Baru'];
-
-            let matrixData = [];
-            lembagas.forEach((lem, xIdx) => {
-                statuses.forEach((st, yIdx) => {
-                    let count = dataset.filter(d => d.lembaga === lem && d.status === st).length;
-                    matrixData.push({
-                        x: lem,
-                        y: st,
-                        v: count
-                    });
-                });
-            });
-
-            if (heatmapChartInstance) {
-                heatmapChartInstance.destroy();
-            }
-
-            heatmapChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: lembagas,
-                    datasets: [
-                        {
-                            label: 'Kritis (<1th)',
-                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Kritis').length),
-                            backgroundColor: '#DC2626'
-                        },
-                        {
-                            label: 'Waspada (1-2th)',
-                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Waspada').length),
-                            backgroundColor: '#D97706'
-                        },
-                        {
-                            label: 'Aman (>2th)',
-                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Aman').length),
-                            backgroundColor: '#059669'
-                        },
-                        {
-                            label: 'Baru',
-                            data: lembagas.map(l => dataset.filter(d => d.lembaga === l && d.status === 'Baru').length),
-                            backgroundColor: '#6B7280'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Distribusi Status Akreditasi per Lembaga Akreditasi',
-                            font: { size: 14, weight: 'bold' }
-                        },
-                        legend: { position: 'bottom' }
-                    },
-                    scales: {
-                        x: { stacked: true },
-                        y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
-                    }
-                }
-            });
+        function resetDefaultSort() {
+            renderAdminTable(sortByDefaultStatus([...masterDataset]));
         }
 
-        // GENERATE PDF REPORT
+        // GENERATE LAPORAN PDF (Visualisasi & Tabel)
         function generatePDFReport() {
-            // Options for html2pdf
-            const element = document.body;
+            const btn = document.getElementById("btnGeneratePDF");
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i>Generating PDF...`;
+            btn.disabled = true;
+
+            const element = document.getElementById('pdf-report-content');
             const opt = {
                 margin:       [0.3, 0.3, 0.3, 0.3],
-                filename:     'Laporan_Akreditasi_Program_Studi_Ekoteologi.pdf',
+                filename:     'Laporan_Akreditasi_Ekoteologi_Islam.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
             };
 
-            // Trigger PDF Download or print window
-            window.print();
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = `<i class="fa-solid fa-file-pdf me-2"></i>Generate Laporan PDF (Visualisasi & Tabel)`;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                btn.innerHTML = `<i class="fa-solid fa-file-pdf me-2"></i>Generate Laporan PDF (Visualisasi & Tabel)`;
+                btn.disabled = false;
+                window.print(); // Fallback to print
+            });
         }
 
-        // Initialize on Load
-        window.addEventListener('DOMContentLoaded', () => {
-            dataset = sortDatasetByPriority(dataset);
-            updateSummaryStats();
+        // FILTER & SEARCH EVENT LISTENERS
+        document.getElementById('searchInput').addEventListener('keyup', filterData);
+        document.getElementById('filterStatus').addEventListener('change', filterData);
+
+        function filterData() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            let filtered = masterDataset.filter(item => {
+                const matchesSearch = item.prodi.toLowerCase().includes(query) || 
+                                      item.lembaga.toLowerCase().includes(query) || 
+                                      item.status.toLowerCase().includes(query);
+                const matchesStatus = (statusFilter === 'ALL') || (item.status === statusFilter);
+                return matchesSearch && matchesStatus;
+            });
+
+            renderDatasetTable(sortByDefaultStatus(filtered));
+        }
+
+        // INITIALIZATION ON LOAD
+        document.addEventListener("DOMContentLoaded", () => {
+            const sortedInitial = sortByDefaultStatus([...masterDataset]);
+            renderDatasetTable(sortedInitial);
             renderAlertSystem();
-            renderTable();
-            updateHeatmapChart();
+            renderHeatmap();
+            renderAdminTable(sortedInitial);
         });
     </script>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
