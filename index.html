@@ -35,7 +35,7 @@
 </div>
 </div>
 <div class="flex gap-2">
-<button id="btnDownloadPDF" class="bg-red-700 text-white px-4 py-2 rounded text-sm hover:bg-red-600">📄 Download PDF Dashboard</button>
+<button id="btnDownloadPDF" class="bg-red-700 text-white px-4 py-2 rounded text-sm hover:bg-red-600">📄</button>
 <button id="btnDownloadDataPDF" class="bg-blue-800 text-white px-4 py-2 rounded text-sm hover:bg-blue-700">📊 Download PDF Data</button>
 </div>
 </div>
@@ -84,7 +84,7 @@
 </div>
 </div>
 <div class="bg-white p-5 rounded-xl shadow">
-<h3 class="font-bold text-sm mb-1">Proyeksi Re-Akreditasi Tahunan (Beban Kerja LPM)</h3>
+<h3 class="font-bold text-sm mb-1">Proyeksi Re-Akreditasi Tahunan (Beban Kerja)</h3>
 <p class="text-xs text-gray-500 mb-3">Line/Column untuk alokasi anggaran & tim</p>
 <canvas id="chartProyeksi" height="260"></canvas>
 <div class="mt-3 p-3 bg-red-50 rounded text-xs">
@@ -117,15 +117,6 @@
 </div>
 
 <!-- BOTTOM TIER -->
-<div class="mb-6">
-<h2 class="font-bold text-lg text-blue-900 mb-3">🗂️ Detail & Matriks Wilayah (Bottom Tier)</h2>
-<div class="grid md:grid-cols-1 gap-6">
-<div class="bg-white p-5 rounded-xl shadow">
-<h3 class="font-bold text-sm mb-1">Rasio per Fakultas/Wilayah - 100% Stacked Bar (Perbandingan Adil)</h3>
-<p class="text-xs text-gray-500 mb-3">Membandingkan kinerja akreditasi antar-fakultas secara proporsional, bukan absolut</p>
-<canvas id="chartFakultas100" height="150"></canvas>
-<div class="mt-3 text-xs text-gray-500">FTIK paling banyak prodi, tapi FEBI paling tinggi % Unggul. 100% stacked memungkinkan perbandingan adil.</div>
-</div>
 
 <div class="bg-white p-5 rounded-xl shadow">
 <div class="flex flex-wrap justify-between items-center mb-3 gap-3">
@@ -162,7 +153,7 @@
 
 <!-- ADMIN -->
 <div class="bg-gray-900 rounded-xl p-6 border-2 border-amber-400 mt-8">
-<h2 class="text-white font-bold mb-3">🔒 Area Admin - Password: admin68 - Editable + Upload + Cloud</h2>
+<h2 class="text-white font-bold mb-3">🔒 Area Admin</h2>
 <div id="adminLocked"><input id="adminPass" type="password" placeholder="Password" class="px-3 py-2 rounded bg-gray-800 text-white border mr-2"><button id="btnUnlock" class="bg-amber-400 text-black px-4 py-2 rounded font-bold">Buka</button><p id="passError" class="text-red-400 text-xs mt-2 hidden">Salah!</p></div>
 <div id="adminOpened" class="hidden">
 <div class="bg-gray-800 p-4 rounded mb-4">
