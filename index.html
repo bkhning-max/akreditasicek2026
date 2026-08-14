@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Akreditasi - Alert Kritis & Waspada di Atas</title>
+<title>SATU AURA - Accreditation Update & Risk Alert</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -25,15 +25,15 @@
 <div class="bg-white rounded-xl shadow p-6 mb-6 border-l-4 border-blue-900">
 <div class="flex flex-wrap justify-between items-start gap-4">
 <div>
-<h1 class="text-2xl md:text-3xl font-bold text-blue-900">Dashboard Akreditasi UIN SATU - Alert Kritis & Waspada di Atas</h1>
-<p class="text-sm text-gray-600 mt-1">Alert System khusus di atas filter Strata & Lembaga - No Fakultas</p>
+<h1 class="text-2xl md:text-3xl font-bold text-blue-900">SATU AURA - Accreditation Update & Risk Alert</h1>
+<p class="text-sm text-gray-600 mt-1">Lembaga Penjaminan Mutu UIN Sayyid Ali Rahmatullah Tulungagung</p>
 <div class="flex gap-2 mt-3 flex-wrap">
 <span id="saveStatus" class="text-xs bg-gray-100 px-3 py-1 rounded-full">💾 54 Prodi</span>
 <span id="cloudStatus" class="text-xs bg-blue-100 px-3 py-1 rounded-full hidden">☁️ Cloud</span>
 </div>
 </div>
 <div class="flex gap-2">
-<button id="btnDownloadPDF" class="bg-red-700 text-white px-4 py-2 rounded text-sm">📄 PDF Dashboard</button>
+<button id="btnDownloadPDF" class="bg-red-700 text-white px-4 py-2 rounded text-sm">📄</button>
 <button id="btnDownloadDataPDF" class="bg-blue-800 text-white px-4 py-2 rounded text-sm">📊 PDF Data</button>
 </div>
 </div>
@@ -41,7 +41,7 @@
 
 <!-- ALERT SYSTEM KHUSUS KRITIS & WASPADA - DI ATAS SORTIR -->
 <div class="mb-6">
-<h2 class="font-bold text-lg text-red-800 mb-3">🚨 Alert System Khusus - Program Studi Status Kritis & Waspada</h2>
+<h2 class="font-bold text-lg text-red-800 mb-3">🚨 Alert System - Program Studi Status Kritis & Waspada</h2>
 <p class="text-xs text-gray-500 mb-3">Kotak alert ini berada di atas filter Strata & Lembaga agar pimpinan langsung lihat prodi yang butuh tindakan segera</p>
 <div class="grid md:grid-cols-2 gap-6">
 <!-- KRITIS -->
@@ -52,7 +52,7 @@
 </div>
 <div class="p-4 max-h-[280px] overflow-auto">
 <div id="alertKritisBody" class="space-y-2"></div>
-<div id="alertKritisEmpty" class="text-center py-8 text-gray-400 text-sm hidden">✅ Tidak ada prodi kritis - Aman!</div>
+<div id="alertKritisEmpty" class="text-center py-8 text-gray-400 text-sm hidden">✅ Tidak ada prodi kritis</div>
 </div>
 <div class="bg-red-50 p-2 text-xs text-red-700 border-t">Tindakan: Segera siapkan LED, LKPS, dan ajukan re-akreditasi ke BAN-PT/LAM</div>
 </div>
@@ -82,7 +82,7 @@
 </div>
 
 <div class="mb-6">
-<h2 class="font-bold text-lg text-blue-900 mb-3">🔝 Top Tier - Proporsi Mutlak & Komposisi Jenjang</h2>
+<h2 class="font-bold text-lg text-blue-900 mb-3">🔝 Proporsi Mutlak & Komposisi Jenjang</h2>
 <div class="grid md:grid-cols-2 gap-6">
 <div class="bg-white p-5 rounded-xl shadow">
 <h3 class="font-bold text-sm">Donut Chart - Proporsi Mutlak Peringkat</h3>
@@ -98,7 +98,7 @@
 </div>
 
 <div class="mb-6">
-<h2 class="font-bold text-lg text-blue-900 mb-3">📈 Middle Tier - Tren & Operasional</h2>
+<h2 class="font-bold text-lg text-blue-900 mb-3">📈 Tren & Operasional</h2>
 <div class="grid md:grid-cols-2 gap-6 mb-6">
 <div class="bg-white p-5 rounded-xl shadow">
 <h3 class="font-bold text-sm">Sebaran Lembaga Pemeringkat</h3>
@@ -126,7 +126,7 @@
 </div>
 </div>
 <div class="bg-white p-5 rounded-xl shadow">
-<h3 class="font-bold text-sm">Heatmap - Sebaran Mutu per Lembaga</h3>
+<h3 class="font-bold text-sm">Sebaran Mutu per Lembaga</h3>
 <div class="overflow-auto">
 <table class="w-full text-xs border"><thead><tr class="bg-gray-100"><th class="p-2">Lembaga</th><th class="p-2">Unggul</th><th class="p-2">Baik Sekali</th><th class="p-2">Baik</th><th class="p-2">Belum</th><th class="p-2">Total</th></tr></thead><tbody id="heatmapBody"></tbody></table>
 </div>
@@ -168,7 +168,7 @@
 </div>
 
 <div class="bg-gray-900 rounded-xl p-6 border-2 border-amber-400 mt-8">
-<h2 class="text-white font-bold mb-3">🔒 Area Admin - Password: admin68</h2>
+<h2 class="text-white font-bold mb-3">🔒 Area Admin</h2>
 <div id="adminLocked"><input id="adminPass" type="password" placeholder="Password" class="px-3 py-2 rounded bg-gray-800 text-white border mr-2"><button id="btnUnlock" class="bg-amber-400 text-black px-4 py-2 rounded font-bold">Buka</button><p id="passError" class="text-red-400 text-xs mt-2 hidden">Salah!</p></div>
 <div id="adminOpened" class="hidden">
 <div class="bg-gray-800 p-4 rounded mb-4">
