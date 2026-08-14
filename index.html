@@ -303,7 +303,7 @@ function renderEditableTable(){
 function init(){
   let ep=localStorage.getItem(LS_CLOUD); if(ep) document.getElementById('cloudEndpoint').value=ep;
   let auto=localStorage.getItem('autoSync')==='true'; document.getElementById('autoSyncToggle').checked=auto;
-  loadCloud().then(ok=>{ if(!ok){ if(!loadLS()) currentData=JSON.parse(JSON.stringify(defaultData)); } buildCharts(); renderEditableTable(); document.getElementById('saveStatus').textContent='💾 Data siap '+currentData.length+' prodi (Alert di Atas)'; });
+  loadCloud().then(ok=>{ if(!ok){ if(!loadLS()) currentData=JSON.parse(JSON.stringify(defaultData)); } buildCharts(); renderEditableTable(); document.getElementById('saveStatus').textContent='💾 Data '+currentData.length+' Program Studi'; });
 }
 
 document.getElementById('filterStrata').addEventListener('change', ()=>{ showingRows=10; buildCharts(); });
