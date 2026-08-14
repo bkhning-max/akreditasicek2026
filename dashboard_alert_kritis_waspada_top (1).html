@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Akreditasi - Alert Kritis & Waspada di Atas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+.ce:focus{background:#FEF3C7;outline:2px solid #F59E0B}
+.conditional-kritis{background:#FEE2E2 !important; border-left:4px solid #DC2626}
+.conditional-waspada{background:#FEF3C7 !important; border-left:4px solid #F59E0B}
+.conditional-aman{background:#DCFCE7 !important; border-left:4px solid #16A34A}
+.conditional-baru{background:#F3F4F6 !important; border-left:4px solid #9CA3AF}
+</style>
+</head>
+<body class="bg-gray-100 p-3 md:p-6">
+<div class="max-w-[1600px] mx-auto">
+
+<div class="bg-white rounded-xl shadow p-6 mb-6 border-l-4 border-blue-900">
+<div class="flex flex-wrap justify-between items-start gap-4">
+<div>
+<h1 class="text-2xl md:text-3xl font-bold text-blue-900">Dashboard Akreditasi UIN SATU - Alert Kritis & Waspada di Atas</h1>
+<p class="text-sm text-gray-600 mt-1">Alert System khusus di atas filter Strata & Lembaga - No Fakultas</p>
+<div class="flex gap-2 mt-3 flex-wrap">
+<span id="saveStatus" class="text-xs bg-gray-100 px-3 py-1 rounded-full">💾 54 Prodi</span>
+<span id="cloudStatus" class="text-xs bg-blue-100 px-3 py-1 rounded-full hidden">☁️ Cloud</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button id="btnDownloadPDF" class="bg-red-700 text-white px-4 py-2 rounded text-sm">📄 PDF Dashboard</button>
+<button id="btnDownloadDataPDF" class="bg-blue-800 text-white px-4 py-2 rounded text-sm">📊 PDF Data</button>
+</div>
+</div>
+</div>
+
+<!-- ALERT SYSTEM KHUSUS KRITIS & WASPADA - DI ATAS SORTIR -->
+<div class="mb-6">
+<h2 class="font-bold text-lg text-red-800 mb-3">🚨 Alert System Khusus - Program Studi Status Kritis & Waspada</h2>
+<p class="text-xs text-gray-500 mb-3">Kotak alert ini berada di atas filter Strata & Lembaga agar pimpinan langsung lihat prodi yang butuh tindakan segera</p>
+<div class="grid md:grid-cols-2 gap-6">
+<!-- KRITIS -->
+<div class="bg-white rounded-xl shadow border-2 border-red-500 overflow-hidden">
+<div class="bg-red-600 text-white p-3 flex justify-between items-center">
+<h3 class="font-bold text-sm">🔴 KRITIS - Expired &lt;1 Tahun / Sudah Lewat</h3>
+<span id="countKritis" class="bg-white text-red-600 px-2 py-1 rounded text-xs font-bold">0 Prodi</span>
+</div>
+<div class="p-4 max-h-[280px] overflow-auto">
+<div id="alertKritisBody" class="space-y-2"></div>
+<div id="alertKritisEmpty" class="text-center py-8 text-gray-400 text-sm hidden">✅ Tidak ada prodi kritis - Aman!</div>
+</div>
+<div class="bg-red-50 p-2 text-xs text-red-700 border-t">Tindakan: Segera siapkan LED, LKPS, dan ajukan re-akreditasi ke BAN-PT/LAM</div>
+</div>
+<!-- WASPADA -->
+<div class="bg-white rounded-xl shadow border-2 border-amber-500 overflow-hidden">
+<div class="bg-amber-500 text-black p-3 flex justify-between items-center">
+<h3 class="font-bold text-sm">🟡 WASPADA - Expired 1-2 Tahun</h3>
+<span id="countWaspada" class="bg-white text-amber-700 px-2 py-1 rounded text-xs font-bold">0 Prodi</span>
+</div>
+<div class="p-4 max-h-[280px] overflow-auto">
+<div id="alertWaspadaBody" class="space-y-2"></div>
+<div id="alertWaspadaEmpty" class="text-center py-8 text-gray-400 text-sm hidden">✅ Tidak ada prodi waspada - Aman!</div>
+</div>
+<div class="bg-amber-50 p-2 text-xs text-amber-800 border-t">Tindakan: Mulai cicil dokumen, anggaran asesor, dan monitoring persiapan</div>
+</div>
+</div>
+</div>
+
+<!-- FILTER GLOBAL - DI BAWAH ALERT -->
+<div class="bg-white p-4 rounded-xl shadow mb-6 flex flex-wrap gap-4 items-center border-l-4 border-blue-600">
+<label class="text-sm font-bold text-blue-900">Sortir & Filter:</label>
+<label class="text-sm font-medium">Strata:</label>
+<select id="filterStrata" class="border rounded px-3 py-1 text-sm"><option value="">Semua</option><option>S1</option><option>S2</option><option>S3</option><option>Profesi</option></select>
+<label class="text-sm font-medium">Lembaga:</label>
+<select id="filterLembaga" class="border rounded px-3 py-1 text-sm"><option value="">Semua</option><option>BAN-PT</option><option>LAMDIK</option><option>LAMEMBA</option><option>-</option></select>
+<button id="resetFilter" class="ml-auto bg-gray-800 text-white px-4 py-1 rounded text-sm">Reset Filter</button>
+</div>
+
+<div class="mb-6">
+<h2 class="font-bold text-lg text-blue-900 mb-3">🔝 Top Tier - Proporsi Mutlak & Komposisi Jenjang</h2>
+<div class="grid md:grid-cols-2 gap-6">
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Donut Chart - Proporsi Mutlak Peringkat</h3>
+<p class="text-xs text-gray-500 mb-3">Unggul, Baik Sekali, Baik</p>
+<canvas id="chartDonutPeringkat" height="280"></canvas>
+<div id="donutLegend" class="grid grid-cols-2 gap-2 mt-3 text-xs"></div>
+</div>
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Stacked Bar - Komposisi Peringkat per Jenjang</h3>
+<canvas id="chartStackedJenjang" height="280"></canvas>
+</div>
+</div>
+</div>
+
+<div class="mb-6">
+<h2 class="font-bold text-lg text-blue-900 mb-3">📈 Middle Tier - Tren & Operasional</h2>
+<div class="grid md:grid-cols-2 gap-6 mb-6">
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Sebaran Lembaga Pemeringkat</h3>
+<canvas id="chartLembaga" height="260"></canvas>
+<div class="mt-3 p-3 bg-blue-50 rounded text-xs">
+<p><b>BAN-PT:</b> <span id="infoBANPT">0</span> | <b>LAMDIK:</b> <span id="infoLAMDIK">0</span> | <b>LAMEMBA:</b> <span id="infoLAMEMBA">0</span></p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Proyeksi Re-Akreditasi Tahunan</h3>
+<canvas id="chartProyeksi" height="260"></canvas>
+<div class="mt-3 p-3 bg-red-50 rounded text-xs">
+<p class="font-bold text-red-700">⚠️ Puncak: <span id="infoPuncak">0</span> prodi di tahun tersibuk</p>
+</div>
+</div>
+</div>
+<div class="grid md:grid-cols-2 gap-6">
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Status Keaktifan & Risiko Kedaluwarsa</h3>
+<canvas id="chartRisiko" height="260"></canvas>
+<div class="mt-3 grid grid-cols-3 gap-2 text-xs">
+<div class="bg-red-100 p-2 rounded text-center"><p class="font-bold text-red-700" id="riskKritis">0</p><p>Kritis</p></div>
+<div class="bg-amber-100 p-2 rounded text-center"><p class="font-bold text-amber-700" id="riskWaspada">0</p><p>Waspada</p></div>
+<div class="bg-green-100 p-2 rounded text-center"><p class="font-bold text-green-700" id="riskAman">0</p><p>Aman</p></div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl shadow">
+<h3 class="font-bold text-sm">Heatmap - Sebaran Mutu per Lembaga</h3>
+<div class="overflow-auto">
+<table class="w-full text-xs border"><thead><tr class="bg-gray-100"><th class="p-2">Lembaga</th><th class="p-2">Unggul</th><th class="p-2">Baik Sekali</th><th class="p-2">Baik</th><th class="p-2">Belum</th><th class="p-2">Total</th></tr></thead><tbody id="heatmapBody"></tbody></table>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mb-6">
+<h2 class="font-bold text-lg text-blue-900 mb-3">🗂️ Bottom Tier - Wilayah & Alert Lengkap</h2>
+<div class="bg-white p-5 rounded-xl shadow mb-6">
+<h3 class="font-bold text-sm mb-1">Rasio per Wilayah / Strata - 100% Stacked Bar</h3>
+<canvas id="chartWilayah100" height="150"></canvas>
+</div>
+
+<div class="bg-white p-5 rounded-xl shadow">
+<div class="flex flex-wrap justify-between items-center mb-3 gap-3">
+<div>
+<h3 class="font-bold text-sm">📋 Tabel Interaktif Lengkap - 10 Baris + Loadmore + PDF</h3>
+<p class="text-xs text-gray-500">Search, sorting tanggal, conditional formatting</p>
+</div>
+<div class="flex gap-2">
+<button id="btnExportPDFTable" class="bg-red-600 text-white px-3 py-1 rounded text-xs">PDF Tabel</button>
+<button id="btnExportCSVTable" class="bg-green-600 text-white px-3 py-1 rounded text-xs">CSV</button>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-3">
+<input id="searchTableMain" type="text" placeholder="Cari prodi, SK, peringkat..." class="border rounded px-3 py-1 text-sm flex-1 min-w-[200px]">
+<select id="sortTable" class="border rounded px-2 py-1 text-sm"><option value="kedaluwarsa_asc">Kedaluwarsa Terdekat</option><option value="kedaluwarsa_desc">Terlama</option><option value="prodi_asc">Prodi A-Z</option><option value="peringkat_desc">Peringkat Terbaik</option></select>
+<select id="filterStatusTable" class="border rounded px-2 py-1 text-sm"><option value="">Semua Status</option><option value="kritis">Kritis</option><option value="waspada">Waspada</option><option value="aman">Aman</option><option value="baru">Baru</option></select>
+</div>
+<div class="overflow-auto max-h-[600px] border rounded">
+<table class="w-full text-xs"><thead class="bg-blue-900 text-white sticky top-0"><tr><th class="p-2">No</th><th class="p-2">Program Studi</th><th class="p-2">Strata</th><th class="p-2">Lembaga</th><th class="p-2">Peringkat</th><th class="p-2">Kedaluwarsa</th><th class="p-2">Sisa</th><th class="p-2">Status</th></tr></thead><tbody id="mainTableBody"></tbody></table>
+</div>
+<div class="flex justify-between items-center mt-3">
+<p class="text-xs text-gray-500">Menampilkan <span id="showingCount">0</span> dari <span id="totalCount">0</span></p>
+<button id="btnLoadMore" class="bg-blue-800 text-white px-4 py-1 rounded text-sm">Load More 10 Baris</button>
+</div>
+</div>
+</div>
+
+<div class="bg-gray-900 rounded-xl p-6 border-2 border-amber-400 mt-8">
+<h2 class="text-white font-bold mb-3">🔒 Area Admin - Password: admin68</h2>
+<div id="adminLocked"><input id="adminPass" type="password" placeholder="Password" class="px-3 py-2 rounded bg-gray-800 text-white border mr-2"><button id="btnUnlock" class="bg-amber-400 text-black px-4 py-2 rounded font-bold">Buka</button><p id="passError" class="text-red-400 text-xs mt-2 hidden">Salah!</p></div>
+<div id="adminOpened" class="hidden">
+<div class="bg-gray-800 p-4 rounded mb-4">
+<input id="cloudEndpoint" placeholder="https://api.npoint.io/xxxxxx" class="w-full md:w-1/2 px-3 py-2 rounded bg-gray-900 text-white border text-sm">
+<label class="text-white text-xs ml-2"><input type="checkbox" id="autoSyncToggle"> Auto-sync Cloud</label>
+<button id="btnSyncToCloud" class="ml-2 bg-blue-600 text-white px-3 py-1 rounded text-xs">Sync Cloud</button>
+<button id="btnLoadFromCloud" class="bg-purple-600 text-white px-3 py-1 rounded text-xs">Load Cloud</button>
+<span id="cloudLog" class="text-xs text-gray-400 ml-2"></span>
+</div>
+<div class="bg-gray-800 border-2 border-dashed border-gray-600 rounded p-4 mb-4 text-center">
+<input type="file" id="fileUpload" accept=".csv,.xlsx,.xls" class="hidden">
+<button id="btnBrowse" class="bg-gray-700 text-white px-3 py-1 rounded text-xs">Browse CSV/XLSX - edit per sel tetap bisa</button>
+<span id="fileName" class="text-xs text-gray-400 ml-2"></span>
+<button id="btnAddRow" class="ml-2 bg-blue-600 text-white px-3 py-1 rounded text-xs">+ Tambah</button>
+<button id="btnExportCSV" class="bg-green-600 text-white px-3 py-1 rounded text-xs">Export CSV</button>
+<button id="btnReset" class="bg-gray-600 text-white px-3 py-1 rounded text-xs">Reset 54</button>
+</div>
+<div class="overflow-auto max-h-[400px] bg-white rounded"><table class="w-full text-xs text-black"><thead class="bg-gray-200 sticky top-0"><tr><th class="p-2"><input type="checkbox" id="checkAllAdmin"></th><th>No</th><th>Prodi</th><th>Strata</th><th>Lembaga</th><th>Peringkat</th><th>Kedaluwarsa</th><th>Status</th></tr></thead><tbody id="editableBody"></tbody></table></div>
+</div>
+</div>
+
+</div>
+
+<script>
+let defaultData = [{"Nomor": 1, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pariwisata Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6744/SK/BAN-PT/Ak/S/VI/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2031-06-09", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 2, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Keluarga Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "6488/SK/BAN-PT/Ak/M/V/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-05-05", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 3, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tasawuf Psikoterapi", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6262/SK/BAN-PT/Ak/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-31", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 4, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Dakwah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "420/SK/BAN-PT/Ak/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-10", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 5, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Al-Qur`an Dan Tafsir", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "317/SK/BAN-PT/Ak/M/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-03-03", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 6, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Al-Qur`an Dan Tafsir", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "349/SK/BAN-PT/Ak.Ppj/S/III/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2031-01-13", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 7, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Perpustakaan Dan Informasi Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6338/SK/BAN-PT/Ak.S/S/IV/2026", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik", "Tanggal Kedaluwarsa": "", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 8, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Psikologi Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "8782/SK/BAN-PT/Ak/S/XII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-12-18", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 9, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Tatanegara (Siyasah Syar'iyyah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "8737/SK/BAN-PT/Ak/S/XII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-12-16", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 10, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Studi Islam", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "7779/SK/BAN-PT/Ak/D/X/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-10-01", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 11, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Perbankan Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2882/DE/A.5/AR.10/IX/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-09-29", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 12, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Bimbingan Konseling Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7613/SK/BAN-PT/Ak/S/IX/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-09-16", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 13, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Komunikasi Dan Penyiaran Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7623/SK/BAN-PT/Ak/S/IX/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-09-16", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 14, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Bahasa Dan Sastra Arab", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7422/SK/BAN-PT/Ak/S/IX/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-09-02", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 15, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Ekonomi Syariah (Muamalah)", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "7393/SK/BAN-PT/Ak/M/VIII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-08-26", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 16, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Aqidah Dan Filsafat Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "7025/SK/BAN-PT/Ak/S2/VII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-07-29", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 17, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Aqidah Dan Filsafat Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7038/SK/BAN-PT/Ak/S1/VII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-07-29", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 18, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Ekonomi Syariah (Muamalah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7058/SK/BAN-PT/Ak/S1/VII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-07-29", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 19, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sejarah Peradaban Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6976/SK/BAN-PT/Ak/S1/VII/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-07-08", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 20, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Keluarga Islam (Ahwal Al Syakhshiyah)", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "6156/SK/BAN-PT/Ak.Ppj/S/III/2025", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-04-02", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 21, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Guru Madrasah Ibtidaiyah", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "346/SK/LAMDIK/Ak/M/III/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2030-03-23", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 22, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Fisika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1247/SK/LAMDIK/Ak-BDG/S/VII/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-23", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 23, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ekonomi Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2128/DE/A.5/AR.10/III/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-19", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 24, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Keuangan Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2090/DE/A.5/AR.10/III/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-07", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 25, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ekonomi Syariah", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "624/DE/A.5/AR.11/III/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik", "Tanggal Kedaluwarsa": "2030-03-04", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 26, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Kimia", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "291/SK/LAMDIK/Ak/S/III/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-03-04", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 27, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Bisnis Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "2030/DE/A.5/AR.10/II/2025", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-02-14", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 28, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "119/SK/LAMDIK/Ak/M/II/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-02-11", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 29, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Bahasa Arab", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "114/SK/LAMDIK/Ak/M/II/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2030-02-11", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 30, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Profesi Guru", "Strata": "Profesi", "Wilayah": "PTAN", "No. SK": "180/SK/LAMDIK/Ak/P/II/2025", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2029-12-26", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 31, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Agama Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "2139/SK/LAMDIK/Ak/M/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-26", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 32, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ilmu Hadis", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7109/SK/BAN-PT/Ak/S/XII/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-15", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 33, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sosiologi Agama", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "7001/SK/BAN-PT/Ak/S/XII/2024", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-12-11", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 34, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Inggris", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "1839/SK/LAMDIK/Ak/S/XII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-08-06", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 35, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Ekonomi Syariah", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "1361/DE/A.5/AR.10/VII/2024", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2029-07-12", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 36, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "859/SK/LAMDIK/Ak/S/VII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-07-02", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 37, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Guru Madrasah Ibtidaiyah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "557/SK/LAMDIK/Ak/S/V/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-05-16", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 38, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Ilmu Pengetahuan Sosial", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "728/SK/LAMDIK/Ak/S/VI/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-05-07", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 39, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Indonesia", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "547/SK/LAMDIK/Ak/S/V/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-04-16", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 40, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Matematika", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "853/SK/LAMDIK/Ak/M/VII/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2029-04-02", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 41, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Agama Islam", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "453/SK/LAMDIK/Ak/S/IV/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-03-19", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 42, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Pendidikan Islam", "Strata": "S3", "Wilayah": "PTAN", "No. SK": "130/SK/LAMDIK/Ak/D/II/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-03-12", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 43, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Bahasa Arab", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "439/SK/LAMDIK/Ak/S/IV/2024", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2029-03-05", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 44, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Akuntansi Syariah", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "941/DE/A.5/AR.10/I/2024", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2029-01-05", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 45, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Matematika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "879/SK/LAMDIK/Ak/S/IX/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2028-10-09", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 46, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Biologi", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "961/SK/LAMDIK/Ak/S/IX/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-09-26", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 47, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Tadris Bahasa Inggris", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "876/SK/LAMDIK/Ak/M/IX/2023", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-09-05", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 48, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Studi Islam", "Strata": "S2", "Wilayah": "PTAN", "No. SK": "2918/SK/BAN-PT/Ak/M/VII/2023", "Lembaga Akreditasi": "BAN-PT", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-07-25", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 49, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Manajemen Zakat Dan Wakaf", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "457/DE/A.5/AR.10/VI/2023", "Lembaga Akreditasi": "LAMEMBA", "Peringkat": "Baik Sekali", "Tanggal Kedaluwarsa": "2028-06-12", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 50, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Pendidikan Islam Anak Usia Dini", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "804/SK/LAMDIK/Ak/S/XII/2022", "Lembaga Akreditasi": "LAMDIK", "Peringkat": "Unggul", "Tanggal Kedaluwarsa": "2027-12-19", "Status Kedaluwarsa": "Masih berlaku"}, {"Nomor": 51, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Hukum Bisnis", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "", "Status Kedaluwarsa": "Belum ada data BAN-PT / Prodi Baru"}, {"Nomor": 52, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Informatika", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "", "Status Kedaluwarsa": "Belum ada data BAN-PT / Prodi Baru"}, {"Nomor": 53, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Sains Data", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "", "Status Kedaluwarsa": "Belum ada data BAN-PT / Prodi Baru"}, {"Nomor": 54, "Perguruan Tinggi": "Universitas Islam Negeri Sayyid Ali Rahmatullah Tulungagung", "Program Studi": "Teknologi Pangan dan Hasil Pertanian", "Strata": "S1", "Wilayah": "PTAN", "No. SK": "-", "Lembaga Akreditasi": "-", "Peringkat": "-", "Tanggal Kedaluwarsa": "", "Status Kedaluwarsa": "Belum ada data BAN-PT / Prodi Baru"}];
+let currentData = JSON.parse(JSON.stringify(defaultData));
+const LS_KEY='akreditasi_alert_top'; const LS_CLOUD='cloud_ep_alert_top';
+let charts={}; let showingRows=10;
+
+function saveLS(){ localStorage.setItem(LS_KEY, JSON.stringify(currentData)); document.getElementById('saveStatus').innerHTML='💾 Tersimpan '+new Date().toLocaleTimeString(); if(document.getElementById('autoSyncToggle')?.checked) syncCloud(); }
+function loadLS(){ let s=localStorage.getItem(LS_KEY); if(s){ try{ currentData=JSON.parse(s); return true;}catch(e){} } return false; }
+function loadCloud(){ let ep=localStorage.getItem(LS_CLOUD)||document.getElementById('cloudEndpoint').value; if(!ep) return Promise.resolve(false); return fetch(ep).then(r=>r.json()).then(j=>{ let d=j.record||j; if(Array.isArray(d)&&d.length){ currentData=d; saveLS(); return true;} throw new Error('format'); }).catch(()=>false); }
+function syncCloud(){ let ep=document.getElementById('cloudEndpoint').value||localStorage.getItem(LS_CLOUD); if(!ep){ document.getElementById('cloudLog').textContent='Isi endpoint'; return;} localStorage.setItem(LS_CLOUD, ep); fetch(ep,{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(currentData)}).then(()=>{document.getElementById('cloudLog').textContent='✅ Sync OK';}).catch(()=>{ fetch(ep,{method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(currentData)}).then(()=>{document.getElementById('cloudLog').textContent='✅ Sync PUT OK';}); }); }
+
+function getFiltered(){ let s=document.getElementById('filterStrata').value; let l=document.getElementById('filterLembaga').value; return currentData.filter(d=>{ if(s&&d.Strata!==s) return false; if(l&&d['Lembaga Akreditasi']!==l) return false; return true; }); }
+function getRisk(d){ if(!d['Tanggal Kedaluwarsa']||d['Tanggal Kedaluwarsa']==''||d['Lembaga Akreditasi']=='-') return 'baru'; let exp=new Date(d['Tanggal Kedaluwarsa']); let now=new Date(); let diff=Math.ceil((exp-now)/(1000*60*60*24)); if(diff<0) return 'kritis'; if(diff<365) return 'kritis'; if(diff<730) return 'waspada'; return 'aman'; }
+
+function buildAlerts(){
+  let data=getFiltered();
+  let kritis=data.filter(d=>getRisk(d)==='kritis').sort((a,b)=> new Date(a['Tanggal Kedaluwarsa']) - new Date(b['Tanggal Kedaluwarsa']));
+  let waspada=data.filter(d=>getRisk(d)==='waspada').sort((a,b)=> new Date(a['Tanggal Kedaluwarsa']) - new Date(b['Tanggal Kedaluwarsa']));
+  document.getElementById('countKritis').textContent=kritis.length+' Prodi';
+  document.getElementById('countWaspada').textContent=waspada.length+' Prodi';
+  let kBody=document.getElementById('alertKritisBody'); kBody.innerHTML='';
+  let wBody=document.getElementById('alertWaspadaBody'); wBody.innerHTML='';
+  if(kritis.length===0){ document.getElementById('alertKritisEmpty').classList.remove('hidden'); } else { document.getElementById('alertKritisEmpty').classList.add('hidden');
+    kritis.forEach(r=>{ let exp=new Date(r['Tanggal Kedaluwarsa']); let now=new Date(); let diff=Math.ceil((exp-now)/(1000*60*60*24)); let sisa=diff<0? `Lewat ${Math.abs(diff)} hari` : `${diff} hari lagi`; kBody.innerHTML+=`<div class="bg-red-50 border-l-4 border-red-600 p-2 rounded"><div class="flex justify-between"><span class="font-bold text-sm text-red-900">${r['Program Studi']}</span><span class="text-xs bg-red-600 text-white px-2 py-1 rounded">${sisa}</span></div><div class="text-xs text-gray-600 mt-1">${r.Strata} | ${r['Lembaga Akreditasi']} | ${r.Peringkat} | ${r['Tanggal Kedaluwarsa']}</div></div>`; });
+  }
+  if(waspada.length===0){ document.getElementById('alertWaspadaEmpty').classList.remove('hidden'); } else { document.getElementById('alertWaspadaEmpty').classList.add('hidden');
+    waspada.forEach(r=>{ let exp=new Date(r['Tanggal Kedaluwarsa']); let now=new Date(); let diff=Math.ceil((exp-now)/(1000*60*60*24)); wBody.innerHTML+=`<div class="bg-amber-50 border-l-4 border-amber-500 p-2 rounded"><div class="flex justify-between"><span class="font-bold text-sm text-amber-900">${r['Program Studi']}</span><span class="text-xs bg-amber-500 text-black px-2 py-1 rounded">${diff} hari lagi</span></div><div class="text-xs text-gray-600 mt-1">${r.Strata} | ${r['Lembaga Akreditasi']} | ${r.Peringkat} | ${r['Tanggal Kedaluwarsa']}</div></div>`; });
+  }
+}
+
+function buildCharts(){
+  buildAlerts();
+  let data=getFiltered();
+  let pc={}; data.forEach(d=>{ let k=d.Peringkat||'Belum'; if(k=='-'||k=='') k='Belum Akreditasi'; pc[k]=(pc[k]||0)+1; });
+  if(charts.donut) charts.donut.destroy();
+  charts.donut=new Chart(document.getElementById('chartDonutPeringkat'),{type:'doughnut', data:{labels:Object.keys(pc), datasets:[{data:Object.values(pc), backgroundColor:['#1F4E79','#2E75B6','#8EA9DB','#FBBF24','#9CA3AF']}]}, options:{responsive:true, plugins:{legend:{position:'bottom'}}}});
+  let legendDiv=document.getElementById('donutLegend'); legendDiv.innerHTML=''; Object.entries(pc).forEach(([k,v])=>{ legendDiv.innerHTML+=`<div class="flex justify-between bg-gray-50 p-1 rounded"><span>${k}</span><span class="font-bold">${v} (${Math.round(v/data.length*100)}%)</span></div>`; });
+  let strataList=[...new Set(data.map(d=>d.Strata))].filter(Boolean).sort();
+  let peringkatList=[...new Set(data.map(d=>{ let k=d.Peringkat||'Belum'; if(k=='-'||k=='') k='Belum Akreditasi'; return k; }))].filter(Boolean);
+  let stacked=strataList.length? peringkatList.map((p,i)=>({label:p, data:strataList.map(s=> data.filter(d=>{ let pk=d.Peringkat||'Belum'; if(pk=='-'||pk=='') pk='Belum Akreditasi'; return d.Strata===s && pk===p; }).length), backgroundColor:['#1F4E79','#2E75B6','#60A5FA','#FBBF24','#9CA3AF'][i%5]})) : [];
+  if(charts.stackedJenjang) charts.stackedJenjang.destroy();
+  charts.stackedJenjang=new Chart(document.getElementById('chartStackedJenjang'),{type:'bar', data:{labels:strataList, datasets:stacked}, options:{responsive:true, scales:{x:{stacked:true}, y:{stacked:true}}}});
+  let lc={}; data.forEach(d=>{ let k=d['Lembaga Akreditasi']||'-'; lc[k]=(lc[k]||0)+1; });
+  if(charts.lembaga) charts.lembaga.destroy();
+  charts.lembaga=new Chart(document.getElementById('chartLembaga'),{type:'pie', data:{labels:Object.keys(lc), datasets:[{data:Object.values(lc), backgroundColor:['#3B82F6','#F97316','#10B981','#FACC15']}]}, options:{responsive:true, plugins:{legend:{position:'bottom'}}}});
+  document.getElementById('infoBANPT').textContent=lc['BAN-PT']||0;
+  document.getElementById('infoLAMDIK').textContent=lc['LAMDIK']||0;
+  document.getElementById('infoLAMEMBA').textContent=lc['LAMEMBA']||0;
+  let tc={}; data.forEach(d=>{ let t=d['Tanggal Kedaluwarsa']; if(!t) tc['Baru']=(tc['Baru']||0)+1; else { let y=new Date(t).getFullYear(); if(y) tc[y]=(tc[y]||0)+1; } });
+  let sortedTahun=Object.keys(tc).filter(k=>k!=='Baru').sort();
+  if(charts.proyeksi) charts.proyeksi.destroy();
+  charts.proyeksi=new Chart(document.getElementById('chartProyeksi'),{type:'bar', data:{labels:sortedTahun, datasets:[{type:'bar', label:'Expired', data:sortedTahun.map(k=>tc[k]), backgroundColor:'#EF4444'},{type:'line', label:'Kumulatif', data:sortedTahun.map((k,i)=> sortedTahun.slice(0,i+1).reduce((a,kk)=>a+tc[kk],0)), borderColor:'#1F4E79', tension:0.3}]}, options:{responsive:true}});
+  let puncak=sortedTahun.length? Math.max(...sortedTahun.map(k=>tc[k])):0; document.getElementById('infoPuncak').textContent=puncak;
+  let risk={kritis:0,waspada:0,aman:0,baru:0}; data.forEach(d=>{ risk[getRisk(d)]++; });
+  if(charts.risiko) charts.risiko.destroy();
+  charts.risiko=new Chart(document.getElementById('chartRisiko'),{type:'doughnut', data:{labels:['Kritis','Waspada','Aman','Baru'], datasets:[{data:[risk.kritis,risk.waspada,risk.aman,risk.baru], backgroundColor:['#DC2626','#F59E0B','#16A34A','#9CA3AF']}]}, options:{responsive:true, plugins:{legend:{position:'bottom'}}}});
+  document.getElementById('riskKritis').textContent=risk.kritis;
+  document.getElementById('riskWaspada').textContent=risk.waspada;
+  document.getElementById('riskAman').textContent=risk.aman;
+  let lembagaList=[...new Set(data.map(d=>d['Lembaga Akreditasi']||'-'))];
+  let heatBody=document.getElementById('heatmapBody'); heatBody.innerHTML='';
+  lembagaList.forEach(lem=>{
+    let unggul=data.filter(d=>d['Lembaga Akreditasi']==lem && (d.Peringkat||'').toLowerCase().includes('unggul')).length;
+    let baikSekali=data.filter(d=>d['Lembaga Akreditasi']==lem && (d.Peringkat||'').toLowerCase().includes('baik sekali')).length;
+    let baik=data.filter(d=>d['Lembaga Akreditasi']==lem && (d.Peringkat||'').toLowerCase()=='baik').length;
+    let belum=data.filter(d=>d['Lembaga Akreditasi']==lem && (d.Peringkat=='-'||!d.Peringkat)).length;
+    let total=data.filter(d=>d['Lembaga Akreditasi']==lem).length;
+    heatBody.innerHTML+=`<tr class="border-b"><td class="p-2 font-bold">${lem}</td><td class="p-2">${unggul}</td><td class="p-2">${baikSekali}</td><td class="p-2">${baik}</td><td class="p-2">${belum}</td><td class="p-2 font-bold">${total}</td></tr>`;
+  });
+  let wilayahList=[...new Set(data.map(d=>d.Wilayah||'PTAN'))];
+  let strataFor100=[...new Set(data.map(d=>d.Strata))].filter(Boolean);
+  let wilayahData=strataFor100.map((s,i)=>({label:s, data:wilayahList.map(w=>{ let sub=data.filter(d=>(d.Wilayah||'PTAN')==w); if(!sub.length) return 0; let cnt=sub.filter(d=>d.Strata==s).length; return Math.round(cnt/sub.length*100); }), backgroundColor:['#1F4E79','#2E75B6','#60A5FA','#FBBF24'][i%4]}));
+  if(charts.wilayah100) charts.wilayah100.destroy();
+  charts.wilayah100=new Chart(document.getElementById('chartWilayah100'),{type:'bar', data:{labels:wilayahList, datasets:wilayahData}, options:{responsive:true, scales:{x:{stacked:true, max:100}, y:{stacked:true}}}});
+  renderMainTable();
+}
+
+function renderMainTable(){
+  let data=getFiltered();
+  let search=(document.getElementById('searchTableMain').value||'').toLowerCase();
+  let sort=document.getElementById('sortTable').value;
+  let filterStatus=document.getElementById('filterStatusTable').value;
+  let filtered=data.filter(d=>{ if(search && !JSON.stringify(d).toLowerCase().includes(search)) return false; if(filterStatus && getRisk(d)!==filterStatus) return false; return true; });
+  if(sort==='kedaluwarsa_asc') filtered.sort((a,b)=> new Date(a['Tanggal Kedaluwarsa']||'9999') - new Date(b['Tanggal Kedaluwarsa']||'9999'));
+  else if(sort==='kedaluwarsa_desc') filtered.sort((a,b)=> new Date(b['Tanggal Kedaluwarsa']||'9999') - new Date(a['Tanggal Kedaluwarsa']||'9999'));
+  else if(sort==='prodi_asc') filtered.sort((a,b)=> (a['Program Studi']||'').localeCompare(b['Program Studi']||''));
+  else if(sort==='peringkat_desc') filtered.sort((a,b)=> (b.Peringkat||'').localeCompare(a.Peringkat||''));
+  let tbody=document.getElementById('mainTableBody'); tbody.innerHTML='';
+  let toShow=filtered.slice(0, showingRows);
+  toShow.forEach((r, idx)=>{
+    let risk=getRisk(r); let exp=r['Tanggal Kedaluwarsa']||'-'; let now=new Date(); let diff='-'; if(r['Tanggal Kedaluwarsa']){ let e=new Date(r['Tanggal Kedaluwarsa']); diff=Math.ceil((e-now)/(1000*60*60*24))+' hari'; }
+    let tr=document.createElement('tr'); tr.className='border-b conditional-'+risk;
+    tr.innerHTML=`<td class="p-2">${idx+1}</td><td class="p-2 font-medium">${r['Program Studi']}</td><td class="p-2 text-center">${r.Strata}</td><td class="p-2 text-center">${r['Lembaga Akreditasi']}</td><td class="p-2 text-center">${r.Peringkat}</td><td class="p-2 text-center">${exp}</td><td class="p-2 text-center">${diff}</td><td class="p-2 text-center"><span class="text-xs px-2 py-1 rounded ${risk=='kritis'?'bg-red-200':risk=='waspada'?'bg-yellow-200':risk=='aman'?'bg-green-200':'bg-gray-200'}">${risk}</span></td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('showingCount').textContent=toShow.length;
+  document.getElementById('totalCount').textContent=filtered.length;
+  document.getElementById('btnLoadMore').style.display = toShow.length>=filtered.length ? 'none' : 'block';
+}
+
+function renderEditableTable(){
+  let tbody=document.getElementById('editableBody'); tbody.innerHTML='';
+  currentData.forEach((row, idx)=>{
+    let tr=document.createElement('tr'); tr.className='border-b hover:bg-yellow-50';
+    tr.innerHTML=`<td class="p-1 text-center"><input type="checkbox" class="rowCheck" data-idx="${idx}"></td><td class="p-2">${idx+1}</td><td class="p-2 ce" contenteditable="true" data-field="Program Studi" data-idx="${idx}">${row['Program Studi']||''}</td><td class="p-2 ce" contenteditable="true" data-field="Strata" data-idx="${idx}">${row.Strata||''}</td><td class="p-2 ce" contenteditable="true" data-field="Lembaga Akreditasi" data-idx="${idx}">${row['Lembaga Akreditasi']||''}</td><td class="p-2 ce" contenteditable="true" data-field="Peringkat" data-idx="${idx}">${row.Peringkat||''}</td><td class="p-2 ce" contenteditable="true" data-field="Tanggal Kedaluwarsa" data-idx="${idx}">${row['Tanggal Kedaluwarsa']||''}</td><td class="p-2 ce" contenteditable="true" data-field="Status Kedaluwarsa" data-idx="${idx}">${row['Status Kedaluwarsa']||''}</td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('[contenteditable]').forEach(el=>{ el.addEventListener('blur', e=>{ let idx=parseInt(e.target.dataset.idx); let field=e.target.dataset.field; currentData[idx][field]=e.target.textContent.trim(); saveLS(); buildCharts(); }); });
+}
+
+function init(){
+  let ep=localStorage.getItem(LS_CLOUD); if(ep) document.getElementById('cloudEndpoint').value=ep;
+  let auto=localStorage.getItem('autoSync')==='true'; document.getElementById('autoSyncToggle').checked=auto;
+  loadCloud().then(ok=>{ if(!ok){ if(!loadLS()) currentData=JSON.parse(JSON.stringify(defaultData)); } buildCharts(); renderEditableTable(); document.getElementById('saveStatus').textContent='💾 Data siap '+currentData.length+' prodi (Alert di Atas)'; });
+}
+
+document.getElementById('filterStrata').addEventListener('change', ()=>{ showingRows=10; buildCharts(); });
+document.getElementById('filterLembaga').addEventListener('change', ()=>{ showingRows=10; buildCharts(); });
+document.getElementById('resetFilter').addEventListener('click', ()=>{ document.getElementById('filterStrata').value=''; document.getElementById('filterLembaga').value=''; showingRows=10; buildCharts(); });
+document.getElementById('searchTableMain').addEventListener('input', ()=>{ showingRows=10; renderMainTable(); });
+document.getElementById('sortTable').addEventListener('change', renderMainTable);
+document.getElementById('filterStatusTable').addEventListener('change', ()=>{ showingRows=10; renderMainTable(); });
+document.getElementById('btnLoadMore').addEventListener('click', ()=>{ showingRows+=10; renderMainTable(); });
+document.getElementById('btnUnlock').addEventListener('click', ()=>{ if(document.getElementById('adminPass').value==='admin68'){document.getElementById('adminLocked').classList.add('hidden'); document.getElementById('adminOpened').classList.remove('hidden'); renderEditableTable();} else {document.getElementById('passError').classList.remove('hidden');} });
+document.getElementById('checkAllAdmin').addEventListener('change', e=>{document.querySelectorAll('.rowCheck').forEach(c=>c.checked=e.target.checked);});
+document.getElementById('btnAddRow').addEventListener('click', ()=>{ currentData.push({'Program Studi':'Prodi Baru','Strata':'S1','Wilayah':'PTAN','No. SK':'-','Lembaga Akreditasi':'-','Peringkat':'-','Tanggal Kedaluwarsa':'','Status Kedaluwarsa':'Baru','Perguruan Tinggi':'UIN SATU'}); saveLS(); buildCharts(); renderEditableTable(); });
+document.getElementById('btnExportCSV').addEventListener('click', ()=>{ let csv=Papa.unparse(currentData); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='akreditasi_alert_top.csv'; a.click(); });
+document.getElementById('btnBrowse').addEventListener('click', ()=> document.getElementById('fileUpload').click());
+document.getElementById('fileUpload').addEventListener('change', e=>{ let file=e.target.files[0]; if(!file) return; if(file.name.endsWith('.csv')){ Papa.parse(file,{header:true, complete: res=>{ currentData=res.data.filter(r=>r['Program Studi']); saveLS(); buildCharts(); renderEditableTable(); } }); } else { let reader=new FileReader(); reader.onload=evt=>{ let wb=XLSX.read(evt.target.result,{type:'binary'}); let sheet=wb.Sheets[wb.SheetNames[0]]; let json=XLSX.utils.sheet_to_json(sheet); currentData=json.map(r=>({ 'Program Studi': r['Program Studi']||'', Strata:r['Strata']||'', Wilayah:r['Wilayah']||'PTAN','No. SK':r['No. SK']||'', 'Lembaga Akreditasi':r['Lembaga Akreditasi']||'', Peringkat:r['Peringkat']||'','Tanggal Kedaluwarsa':r['Tanggal Kedaluwarsa']||'', 'Status Kedaluwarsa':r['Status Kedaluwarsa']||'', 'Perguruan Tinggi':r['Perguruan Tinggi']||'UIN SATU' })); saveLS(); buildCharts(); renderEditableTable(); }; reader.readAsBinaryString(file); } });
+document.getElementById('btnSyncToCloud').addEventListener('click', syncCloud);
+document.getElementById('btnLoadFromCloud').addEventListener('click', ()=>{ loadCloud().then(()=>{buildCharts(); renderEditableTable();}); });
+document.getElementById('autoSyncToggle').addEventListener('change', e=>{ localStorage.setItem('autoSync', e.target.checked); if(e.target.checked) syncCloud(); });
+document.getElementById('btnDownloadPDF').addEventListener('click', ()=>{ const {jsPDF}=window.jspdf; const doc=new jsPDF('p','mm','a4'); doc.text('Dashboard Akreditasi - Alert Kritis & Waspada di Atas',10,10); doc.save('dashboard_alert_top.pdf'); });
+document.getElementById('btnDownloadDataPDF').addEventListener('click', ()=>{ const {jsPDF}=window.jspdf; const doc=new jsPDF('l','mm','a4'); doc.text('Data Akreditasi - Alert Top',10,10); const rows=currentData.map((r,i)=>[i+1,r['Program Studi'],r.Strata,r['Lembaga Akreditasi'],r.Peringkat,r['Tanggal Kedaluwarsa'],r['Status Kedaluwarsa']]); doc.autoTable({head:[['No','Prodi','Strata','Lembaga','Peringkat','Kedaluwarsa','Status']], body:rows, startY:15, styles:{fontSize:7}}); doc.save('data_alert_top.pdf'); });
+document.getElementById('btnExportPDFTable')?.addEventListener('click', ()=>{ document.getElementById('btnDownloadDataPDF').click(); });
+document.getElementById('btnExportCSVTable')?.addEventListener('click', ()=>{ let csv=Papa.unparse(getFiltered()); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='alert_top.csv'; a.click(); });
+
+init();
+</script>
+</body>
+</html>
